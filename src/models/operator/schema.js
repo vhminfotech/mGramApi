@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const userSchema = new mongoose.Schema(
+const operatorSchema = new mongoose.Schema(
   {
     operatorId: { type: Number },
     name: { type: String },
@@ -9,3 +9,5 @@ const userSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+module.exports = operatorSchema;

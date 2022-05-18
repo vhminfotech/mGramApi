@@ -2,7 +2,7 @@ const { isAuthenticated } = require("../../middleware/permission");
 
 const permissions = {
   Query: {},
-  Mutation: {},
+  Mutation: {  },
 };
 
 module.exports = permissions;

@@ -24,7 +24,6 @@ app.use(
   graphqlUploadExpress({ maxFileSize: 20000000, maxFiles: 2 }),
   graphqlHTTP((request, response, graphQLParams) => ({
     schema: applyMiddleware(schema, permissions),
-    // validationRules: [NoIntrospection],
     graphiql: true,
     context: {
       user: request.user || null,
