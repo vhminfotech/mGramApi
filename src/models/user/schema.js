@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema(
     name: { type: String },
     otp: { type: Number },
     otpDateTime: { type: String },
-    operator: { type: Number },
+    operator: { type: String },
     deletedAt: { type: Date },
     MSISDN: { type: String },
   },
@@ -13,3 +13,5 @@ const userSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+module.exports = userSchema;

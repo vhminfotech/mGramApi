@@ -2,8 +2,12 @@ const UserController = require("./controller");
 
 const resolvers = {
   Mutation: {
-    createUser: async (_parent, { name }, _context, _info) =>
-      await UserController.createUser(name),
+    registerUser: async (
+      _parent,
+      { name, operatorId, MSISDN },
+      _context,
+      _info
+    ) => await UserController.createUser(name, operatorId, MSISDN),
   },
 };
 module.exports = resolvers;
