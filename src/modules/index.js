@@ -4,10 +4,15 @@ const { mergeTypeDefs } = require("@graphql-tools/merge");
 const { buildSchema, print, GraphQLError } = require("graphql");
 const User = require("./user");
 const Operator = require("./operator");
+const AccessPointName = require("./accessPointName");
 
-const typeDefs = [User.typeDef, Operator.typeDef];
+const typeDefs = [User.typeDef, Operator.typeDef, AccessPointName.typeDef];
 
-const resolvers = [User.resolvers, Operator.resolvers];
+const resolvers = [
+  User.resolvers,
+  Operator.resolvers,
+  AccessPointName.resolvers,
+];
 
 const permissions = [User.permissions];
 

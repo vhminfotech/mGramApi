@@ -7,7 +7,7 @@ ${User}
 type UserData{
     name: String
     userId: ID
-    MSISDN: String
+    msisdn: String
     operator: String
     createdAt: Date
     updatedAt: Date
@@ -18,14 +18,14 @@ type UserData{
 
 type CreateUser {
     userId: ID
-    messege: String
+    message: String
     token: String
     status: Int
     userData: UserData
 }
 
 type Mutation {
-    registerUser(name: String, operatorId:ID, MSISDN:String): CreateUser
+    registerUser(name: String, operatorId:ID, msisdn:String): CreateUser
 }
 `;
 

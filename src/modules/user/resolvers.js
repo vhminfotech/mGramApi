@@ -4,10 +4,10 @@ const resolvers = {
   Mutation: {
     registerUser: async (
       _parent,
-      { name, operatorId, MSISDN },
+      { name, operatorId, msisdn },
       _context,
       _info
-    ) => await UserController.createUser(name, operatorId, MSISDN),
+    ) => await UserController.createUser(name, operatorId, msisdn),
   },
 };
 module.exports = resolvers;

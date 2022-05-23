@@ -2,9 +2,9 @@ const jwt = require("jsonwebtoken");
 const User = require("../../models/user/services");
 const Operator = require("../../models/operator/services");
 
-exports.getToken = (name, MSISDN) => {
+exports.getToken = (name, msisdn) => {
   const token = jwt.sign(
-    { name: name, MSISDN: MSISDN },
+    { name: name, msisdn: msisdn },
     process.env.SECRET_KEY,
     {
       expiresIn: "3h",
@@ -13,7 +13,7 @@ exports.getToken = (name, MSISDN) => {
   return token;
 };
 
-exports.createUser = async (name, operatorId, MSISDN) => {
+exports.createUser = async (name, operatorId, msisdn) => {
   try {
     const operator = await Operator.getOperator({
       operatorId: operatorId,
@@ -24,13 +24,13 @@ exports.createUser = async (name, operatorId, MSISDN) => {
     const userData = await User.create({
       name: name,
       operator: operator.name,
-      MSISDN: MSISDN,
+      msisdn: msisdn,
     });
 
     const userDataRes = {
       name: userData.name,
       userId: userData._id,
-      MSISDN: userData.MSISDN,
+      msisdn: userData.msisdn,
       operator: userData.operator,
       createdAt: userData.createdAt,
       updatedAt: userData.updatedAt,
@@ -38,9 +38,9 @@ exports.createUser = async (name, operatorId, MSISDN) => {
       userStatus: 1,
     };
 
-    const token = this.getToken(userData.name, userData.MSISDN);
+    const token = this.getToken(userData.name, userData.msisdn);
     return {
-      messege: "User Registred Successfully",
+      message: "User Registred Successfully",
       token,
       status: 1,
       userData: userDataRes,
