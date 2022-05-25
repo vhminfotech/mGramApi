@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema(
     otpDateTime: { type: String },
     operator: { type: String },
     deletedAt: { type: Date },
-    MSISDN: { type: String },
+    msisdn: { type: String },
   },
   {
     timestamps: true,

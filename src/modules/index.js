@@ -5,13 +5,20 @@ const { buildSchema, print, GraphQLError } = require("graphql");
 const User = require("./user");
 const Operator = require("./operator");
 const AccessPointName = require("./accessPointName");
+const AppConfig = require("./appConfig");
 
-const typeDefs = [User.typeDef, Operator.typeDef, AccessPointName.typeDef];
+const typeDefs = [
+  User.typeDef,
+  Operator.typeDef,
+  AccessPointName.typeDef,
+  AppConfig.typeDef,
+];
 
 const resolvers = [
   User.resolvers,
   Operator.resolvers,
   AccessPointName.resolvers,
+  AppConfig.resolvers,
 ];
 
 const permissions = [User.permissions];

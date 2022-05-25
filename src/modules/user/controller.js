@@ -19,8 +19,6 @@ exports.createUser = async (name, operatorId, msisdn) => {
       operatorId: operatorId,
     });
 
-    console.log("operator", operator);
-
     const userData = await User.create({
       name: name,
       operator: operator.name,
