@@ -6,12 +6,18 @@ const User = require("./user");
 const Operator = require("./operator");
 const AccessPointName = require("./accessPointName");
 const AppConfig = require("./appConfig");
+const Thread = require("./thread");
+const Attachment = require("./attachment");
+const Message = require("./message");
 
 const typeDefs = [
   User.typeDef,
   Operator.typeDef,
   AccessPointName.typeDef,
   AppConfig.typeDef,
+  Thread.typeDef,
+  Attachment.typeDef,
+  Message.typeDef,
 ];
 
 const resolvers = [
@@ -19,9 +25,12 @@ const resolvers = [
   Operator.resolvers,
   AccessPointName.resolvers,
   AppConfig.resolvers,
+  Thread.resolvers,
+  Attachment.resolvers,
+  Message.resolvers,
 ];
 
-const permissions = [User.permissions];
+const permissions = [User.permissions, Thread.permissions];
 
 const mergedTypeDef = print(mergeTypeDefs(typeDefs));
 exports.typeDefs = buildSchema(mergedTypeDef);

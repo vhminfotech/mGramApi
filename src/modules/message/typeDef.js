@@ -1,14 +1,58 @@
-const { Operator } = require("./contract");
+const { Message } = require("./contract");
 
 const typeDef = `
-${Operator}
+${Message}
+
+enum AttachmentTypeEnum{
+    text
+    image
+    video
+}
+
+type MessageData{
+    id: ID,
+    threadId: ID,
+    senderId: ID,
+    message: String,
+    dateSent: Date,
+}
+
+type GetMessageListRes{
+    messages: [MessageData]
+}
+
+input MessageInput{
+    threadId: ID,
+    senderId: ID,
+    message: String,
+    dateSend: String,
+    isAttachment: Boolean,
+    attachmentType: AttachmentTypeEnum
+    attachmentId: ID,
+    url: String,
+}
+
+type DeleteMessageRes{
+    messageId: ID
+    messageRes: String
+}
+
+input DeleteMessageInput{
+    threadId: ID,
+    userId: ID,
+    messageId: [ID],
+    attachmentId: ID
+}
+
 
 type Query{
-    getOperator(operatorId: ID): Operator
+    getMessage(messageId: ID): Message
+    getMessageList(senderId: ID, receiverId: ID, threadId: ID): GetMessageListRes
 }
 
 type Mutation {
-    createOperator(name: String, operatorId: ID): Operator
+    createMessage(messageInput : MessageInput): Message
+    deleteMessages(deleteMessageInput : DeleteMessageInput): DeleteMessageRes
 }
 `;
 

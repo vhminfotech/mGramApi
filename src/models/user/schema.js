@@ -7,11 +7,13 @@ const userSchema = new mongoose.Schema(
     otpDateTime: { type: String },
     operator: { type: String },
     deletedAt: { type: Date },
-    msisdn: { type: String },
+    msisdn: { type: String, trim: true },
   },
   {
     timestamps: true,
   }
 );
+
+userSchema.index({ msisdn: 1 }, { unique: true });
 
 module.exports = userSchema;

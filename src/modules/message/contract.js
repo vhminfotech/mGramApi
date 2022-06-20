@@ -2,12 +2,14 @@ exports.Message = `
 
 type Message {
     _id: ID
-    threadId: Int,
-    senderId: Int,
+    threadId: ID,
+    senderId: ID,
     message: String,
     dateSend: String,
     isAttachment: Boolean,
-    attachment_id: Int,
+    attachmentId: ID,
     url: String,
+    isDeleted: Boolean
+    deletedForUser: [String]
 }
 `;

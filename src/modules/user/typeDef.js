@@ -2,6 +2,7 @@ const { User } = require("./contract");
 
 const typeDef = `
 scalar Date
+scalar JSON
 ${User}
 
 type UserData{
@@ -16,12 +17,23 @@ type UserData{
     chatFeature: Int
 }
 
+
 type CreateUser {
     userId: ID
     message: String
     token: String
     status: Int
     userData: UserData
+    threadId: ID
+}
+
+type UserDataResponse{
+    userData: [UserData]
+}
+
+type Query{
+    getUserUsingApp(userData: [String],userId: ID,threadId: ID): UserDataResponse
+    getAllUsers: User
 }
 
 type Mutation {
