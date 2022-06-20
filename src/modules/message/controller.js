@@ -1,5 +1,6 @@
 const Message = require("../../models/message/services");
 const Thread = require("../../models/thread/services");
+const User = require("../../models/user/services");
 const moment = require("moment");
 
 exports.createMessage = async (messageInput) => {
@@ -16,7 +17,6 @@ exports.createMessage = async (messageInput) => {
 
     const messageRes = await Message.create(messageData);
 
-    console.log("messageRes createMessage", messageRes);
     return messageRes;
   } catch (error) {
     throw error;
@@ -42,8 +42,6 @@ exports.getMessageList = async (senderId, receiverId, threadId) => {
       ],
     });
 
-    console.log("checkThread getMessageList", checkThread);
-
     let threadIdObjRes;
 
     if (checkThread) {
@@ -60,8 +58,6 @@ exports.getMessageList = async (senderId, receiverId, threadId) => {
 
     // const messageRes = await Message.getAllMessage(threadIdObjRes);
 
-    console.log("messageRes getMessageList", messageRes);
-
     const messageListRes = messageRes.map((messageItem) => {
       const messageObj = {
         id: messageItem._id,
@@ -73,7 +69,32 @@ exports.getMessageList = async (senderId, receiverId, threadId) => {
       return messageObj;
     });
 
-    console.log("messageListRes getMessageList", messageListRes);
+    return { messages: messageListRes };
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.getGroupMessageList = async (senderId, threadId) => {
+  try {
+    const threadIdObj = { threadId: threadId };
+
+    const messageRes = await Message.getAllMessage({
+      $and: [threadIdObj, { deletedForUser: { $nin: [senderId] } }],
+    });
+
+    const messageListRes = messageRes.map(async (messageItem) => {
+      const userRes = await User.getById({ _id: messageItem.senderId });
+      const messageObj = {
+        id: messageItem._id,
+        threadId: messageItem.threadId,
+        senderId: messageItem.senderId,
+        message: messageItem.message,
+        dateSent: messageItem.createdAt,
+        userName: userRes.name,
+      };
+      return messageObj;
+    });
 
     return { messages: messageListRes };
   } catch (error) {
@@ -83,10 +104,6 @@ exports.getMessageList = async (senderId, receiverId, threadId) => {
 
 exports.deleteMessages = async (deleteMessageInput) => {
   try {
-    console.log(
-      "deleteMessageInput.userId deleteMessages",
-      deleteMessageInput.userId
-    );
     const updateObject = deleteMessageInput.userId;
     const deleteMessageRes = deleteMessageInput.messageId.map(
       async (deleteMessageInputItem) => {

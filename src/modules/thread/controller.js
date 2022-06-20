@@ -6,69 +6,38 @@ const { getMessageList } = require("../message/controller");
 
 exports.createThread = async (threadInput) => {
   try {
-    let recipientsId = threadInput?.recipientsIds[0];
-    const checkThread = await Thread.getThread({
-      $or: [
-        {
-          $and: [
-            { lastSenderId: threadInput?.lastSenderId },
-            { recipientsIds: { $in: [recipientsId] } },
-          ],
-        },
-        {
-          $and: [
-            { lastSenderId: recipientsId },
-            { recipientsIds: { $in: [threadInput?.lastSenderId] } },
-          ],
-        },
-      ],
-    });
+    let checkThread;
+    if (threadInput.isGroup === false) {
+      let recipientsId = threadInput?.recipientsIds[0];
+      const checkThreadRes = await Thread.getThread({
+        $or: [
+          {
+            $and: [
+              { lastSenderId: threadInput?.lastSenderId },
+              { recipientsIds: { $in: [recipientsId] } },
+            ],
+          },
+          {
+            $and: [
+              { lastSenderId: recipientsId },
+              { recipientsIds: { $in: [threadInput?.lastSenderId] } },
+            ],
+          },
+        ],
+      });
+      checkThread = checkThreadRes;
+    }
 
     if (checkThread) {
-      // if (checkThread.deletedForUser.includes(recipientsId)) {
-      //   checkThread.deletedForUser.forEach(async () => {
-      //     for (var i = checkThread.deletedForUser.length; i--; ) {
-      //       if (checkThread.deletedForUser[i] === recipientsId) {
-      //         const checkThreadRes = await Thread.updateOne(
-      //           checkThread._id,
-      //           checkThread.deletedForUser[i]
-      //         );
-      //       }
-      //     }
-      //   });
-      // }
-      // if (checkThread.deletedForUser.includes(threadInput?.lastSenderId)) {
-      //   checkThread.deletedForUser.forEach(async () => {
-      //     for (var i = checkThread.deletedForUser.length; i--; ) {
-      //       if (checkThread.deletedForUser[i] === threadInput?.lastSenderId) {
-      //         const checkThreadRes = await Thread.updateOne(
-      //           checkThread._id,
-      //           checkThread.deletedForUser[i]
-      //         );
-      //       }
-      //     }
-      //   });
-      // }
-
-      // const messageData = {
-      //   dateSend: moment.utc(new Date()).format(),
-      //   message: threadInput?.message,
-      //   threadId: checkThread._id,
-      //   senderId: threadInput?.lastSenderId,
-      // };
-      // const message = await Message.create(messageData);
-
       return checkThread;
     } else {
-      const threadData = {};
-      if (threadInput.recipientsIds.length >= 2) {
-        threadData.isGroup = true;
-      } else {
-        threadData.message = threadInput?.message;
-        threadData.lastSenderId = threadInput?.lastSenderId;
-        threadData.recipientsIds = threadInput?.recipientsIds;
-        threadData.date = moment.utc(new Date()).format();
-      }
+      const threadData = {
+        message: threadInput?.message,
+        lastSenderId: threadInput?.lastSenderId,
+        recipientsIds: threadInput?.recipientsIds,
+        date: moment.utc(new Date()).format(),
+        isGroup: threadInput?.isGroup,
+      };
 
       const threadRes = await Thread.create(threadData);
 

@@ -8,6 +8,17 @@ const resolvers = {
       _context,
       _info
     ) => await MessageController.getMessageList(senderId, receiverId, threadId),
+    getGroupMessageList: async (
+      _parent,
+      { senderId, threadId },
+      _context,
+      _info
+    ) =>
+      await MessageController.getGroupMessageList(
+        senderId,
+
+        threadId
+      ),
   },
   Mutation: {
     createMessage: async (_parent, { messageInput }, _context, _info) =>

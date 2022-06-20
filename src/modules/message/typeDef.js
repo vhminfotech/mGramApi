@@ -15,6 +15,7 @@ type MessageData{
     senderId: ID,
     message: String,
     dateSent: Date,
+    userName: String
 }
 
 type GetMessageListRes{
@@ -48,6 +49,7 @@ input DeleteMessageInput{
 type Query{
     getMessage(messageId: ID): Message
     getMessageList(senderId: ID, receiverId: ID, threadId: ID): GetMessageListRes
+    getGroupMessageList(senderId: ID, threadId: ID): GetMessageListRes
 }
 
 type Mutation {
