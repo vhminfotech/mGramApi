@@ -2,12 +2,13 @@ const { User } = require("./contract");
 
 const typeDef = `
 scalar Date
+scalar JSON
 ${User}
 
 type UserData{
     name: String
     userId: ID
-    MSISDN: String
+    msisdn: String
     operator: String
     createdAt: Date
     updatedAt: Date
@@ -16,16 +17,27 @@ type UserData{
     chatFeature: Int
 }
 
+
 type CreateUser {
     userId: ID
-    messege: String
+    message: String
     token: String
     status: Int
     userData: UserData
+    threadId: ID
+}
+
+type UserDataResponse{
+    userData: [UserData]
+}
+
+type Query{
+    getUserUsingApp(userData: [String],userId: ID,threadId: ID): UserDataResponse
+    getAllUsers: User
 }
 
 type Mutation {
-    registerUser(name: String, operatorId:ID, MSISDN:String): CreateUser
+    registerUser(name: String, operatorId:ID, msisdn:String): CreateUser
 }
 `;
 

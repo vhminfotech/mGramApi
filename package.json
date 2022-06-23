@@ -28,10 +28,11 @@
     "graphql-middleware": "^6.1.26",
     "graphql-shield": "^7.5.0",
     "graphql-upload": "^13.0.0",
+    "http": "^0.0.1-security",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.3.3"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.16"
+    "moment": "^2.29.3",
+    "mongoose": "^6.3.3",
+    "nodemon": "^2.0.16",
+    "socket.io": "^4.5.1"
   }
 }

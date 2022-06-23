@@ -11,7 +11,6 @@ exports.getById = async (id) => {
 
 exports.create = async (operatorData) => {
   try {
-    console.log("operatorData", operatorData);
     const operator = await Operator.create(operatorData);
     return operator;
   } catch (error) {

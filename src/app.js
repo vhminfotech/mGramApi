@@ -1,14 +1,14 @@
 require("dotenv").config();
 const express = require("express");
+const app = express();
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const path = require("path");
 const { graphqlHTTP } = require("express-graphql");
 const { applyMiddleware } = require("graphql-middleware");
 const { makeExecutableSchema } = require("@graphql-tools/schema");
 const { graphqlUploadExpress } = require("graphql-upload");
 const { resolvers, typeDefs, permissions } = require("./modules");
-
-const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -18,9 +18,11 @@ app.use(express.json());
 
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 
+app.use(express.static(path.join(__dirname, "public")));
+
 // GraphQL
 app.use(
-  "/api",
+  "/graphql",
   graphqlUploadExpress({ maxFileSize: 20000000, maxFiles: 2 }),
   graphqlHTTP((request, response, graphQLParams) => ({
     schema: applyMiddleware(schema, permissions),
