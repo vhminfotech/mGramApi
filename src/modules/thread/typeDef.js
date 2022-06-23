@@ -11,6 +11,7 @@ type UserData{
     message: String
     messageDate: Date
     threadId: ID
+    isGroup: Boolean
 }
 
 type ThreadListRes{

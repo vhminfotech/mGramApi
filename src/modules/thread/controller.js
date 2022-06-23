@@ -37,6 +37,7 @@ exports.createThread = async (threadInput) => {
         recipientsIds: threadInput?.recipientsIds,
         date: moment.utc(new Date()).format(),
         isGroup: threadInput?.isGroup,
+        groupName: threadInput.groupName,
       };
 
       const threadRes = await Thread.create(threadData);
@@ -88,6 +89,7 @@ exports.getThreadList = async (userId) => {
         messageDate: threadListItems.createdAt,
         threadId: threadListItems._id,
         lastSenderId: threadListItems.lastSenderId,
+        isGroup: threadListItems.isGroup,
       });
     });
 
@@ -123,6 +125,7 @@ exports.getThreadList = async (userId) => {
           message: messageRes[0]?.message,
           messageDate: messageRes[0]?.createdAt,
           threadId: arritem.threadId,
+          isGroup: arritem.isGroup,
         };
 
         return recipientUser;
