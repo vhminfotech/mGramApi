@@ -84,8 +84,23 @@ const removeUser = (socketId) => {
   users = users.filter((user) => user.socketId !== socketId);
 };
 
-const getUser = (userId) => {
-  return users.find((user) => user.userId === userId);
+const getUser = async (userId) => {
+  var commasep = userId.replace(/[\[\]']+/g, '')
+  const myArray = commasep.split(",");
+
+  const a = []
+  users.forEach((user, index) => {
+
+    myArray.forEach((receiverItem) => {
+      const trimmedReceiverItem = receiverItem.trim()
+      if (user.userId === trimmedReceiverItem) {
+        a.push(user)
+      }
+    })
+
+
+  })
+  return a
 };
 
 io.on("connection", (socket) => {
@@ -113,13 +128,19 @@ io.on("connection", (socket) => {
 
   const currTime = moment();
   //send and get message
-  socket.on("sendMessage", (senderId, receiverId, text) => {
-    const user = getUser(receiverId);
-    io.to(user?.socketId).emit("getMessage", {
-      senderId,
-      text,
-      currTime,
-    });
+  socket.on("sendMessage", async (senderId, receiverId, text, name) => {
+    const recive = []
+    recive.push(receiverId)
+    const user = await getUser(receiverId);
+    user.forEach((userItem) => {
+      io.to(userItem?.socketId).emit("getMessage", {
+        senderId,
+        text,
+        currTime,
+        name
+      });
+    })
+
   });
 
   //when disconnect

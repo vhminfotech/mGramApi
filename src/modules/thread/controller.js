@@ -2,6 +2,8 @@ const Thread = require("../../models/thread/services");
 const User = require("../../models/user/services");
 const Message = require("../../models/message/services");
 const moment = require("moment");
+
+const _ = require('lodash');
 const { getMessageList } = require("../message/controller");
 
 exports.createThread = async (threadInput) => {
@@ -10,21 +12,24 @@ exports.createThread = async (threadInput) => {
     if (threadInput.isGroup === false) {
       let recipientsId = threadInput?.recipientsIds[0];
       const checkThreadRes = await Thread.getThread({
-        $or: [
-          {
-            $and: [
-              { lastSenderId: threadInput?.lastSenderId },
-              { recipientsIds: { $in: [recipientsId] } },
-            ],
-          },
-          {
-            $and: [
-              { lastSenderId: recipientsId },
-              { recipientsIds: { $in: [threadInput?.lastSenderId] } },
-            ],
-          },
-        ],
+        $and: [{
+          $or: [
+            {
+              $and: [
+                { lastSenderId: threadInput?.lastSenderId },
+                { recipientsIds: { $in: [recipientsId] } },
+              ],
+            },
+            {
+              $and: [
+                { lastSenderId: recipientsId },
+                { recipientsIds: { $in: [threadInput?.lastSenderId] } },
+              ],
+            },
+          ]
+        }, { isGroup: false }]
       });
+
       checkThread = checkThreadRes;
     }
 
@@ -49,7 +54,6 @@ exports.createThread = async (threadInput) => {
         senderId: threadInput?.lastSenderId,
       };
       const message = await Message.create(messageData);
-
       return threadRes;
     }
   } catch (error) {
@@ -68,6 +72,7 @@ exports.getThread = async (threadId) => {
 
 exports.getThreadList = async (userId) => {
   try {
+
     const threadRes = await Thread.getAll({
       $and: [
         {
@@ -81,8 +86,22 @@ exports.getThreadList = async (userId) => {
     //   $or: [{ lastSenderId: userId }, { recipientsIds: { $in: [userId] } }],
     // });
 
-    const recipientsIdsArr = [];
+    const recipientsIdsArr = []
     threadRes.forEach((threadListItems) => {
+      const arr = []
+      threadListItems.recipientsIds.forEach((id, index) => {
+        arr.push(id)
+
+      })
+      arr.push(threadListItems.lastSenderId)
+
+      _.remove(arr, function (el) {
+
+        // remove all numbers
+        return el == userId;
+
+      });
+
       recipientsIdsArr.push({
         recipientsIds: String(threadListItems.recipientsIds[0]),
         message: threadListItems?.message,
@@ -90,17 +109,19 @@ exports.getThreadList = async (userId) => {
         threadId: threadListItems._id,
         lastSenderId: threadListItems.lastSenderId,
         isGroup: threadListItems.isGroup,
+        groupName: threadListItems?.groupName,
+        recipientIds: arr
       });
     });
 
     let uniqueChars = [
       ...new Map(
         recipientsIdsArr.map((item) => [item["recipientsIds"], item])
-      ).values(),
+      ),
     ];
 
     const threadList = await Promise.all(
-      uniqueChars.map(async (arritem) => {
+      recipientsIdsArr.map(async (arritem) => {
         let user;
         if (arritem.recipientsIds === userId) {
           const userRes = await User.getById({ _id: arritem.lastSenderId });
@@ -126,6 +147,8 @@ exports.getThreadList = async (userId) => {
           messageDate: messageRes[0]?.createdAt,
           threadId: arritem.threadId,
           isGroup: arritem.isGroup,
+          groupName: arritem.groupName,
+          recipientIds: arritem.recipientIds
         };
 
         return recipientUser;

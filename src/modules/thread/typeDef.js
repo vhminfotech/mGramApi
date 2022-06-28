@@ -12,6 +12,8 @@ type UserData{
     messageDate: Date
     threadId: ID
     isGroup: Boolean
+    groupName: String
+    recipientIds: [String]
 }
 
 type ThreadListRes{

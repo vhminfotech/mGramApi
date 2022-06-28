@@ -25,21 +25,24 @@ exports.createMessage = async (messageInput) => {
 
 exports.getMessageList = async (senderId, receiverId, threadId) => {
   try {
+
     const checkThread = await Thread.getThread({
-      $or: [
-        {
-          $and: [
-            { lastSenderId: senderId },
-            { recipientsIds: { $in: [receiverId] } },
-          ],
-        },
-        {
-          $and: [
-            { lastSenderId: receiverId },
-            { recipientsIds: { $in: [senderId] } },
-          ],
-        },
-      ],
+      $and: [{
+        $or: [
+          {
+            $and: [
+              { lastSenderId: senderId },
+              { recipientsIds: { $in: [receiverId] } },
+            ],
+          },
+          {
+            $and: [
+              { lastSenderId: receiverId },
+              { recipientsIds: { $in: [senderId] } },
+            ],
+          },
+        ]
+      }, { isGroup: false }]
     });
 
     let threadIdObjRes;
@@ -55,8 +58,6 @@ exports.getMessageList = async (senderId, receiverId, threadId) => {
     const messageRes = await Message.getAllMessage({
       $and: [threadIdObjRes, { deletedForUser: { $nin: [senderId] } }],
     });
-
-    // const messageRes = await Message.getAllMessage(threadIdObjRes);
 
     const messageListRes = messageRes.map((messageItem) => {
       const messageObj = {
@@ -83,7 +84,7 @@ exports.getGroupMessageList = async (senderId, threadId) => {
       $and: [threadIdObj, { deletedForUser: { $nin: [senderId] } }],
     });
 
-    const messageListRes = messageRes.map(async (messageItem) => {
+    const messageListRes = await Promise.all(messageRes.map(async (messageItem) => {
       const userRes = await User.getById({ _id: messageItem.senderId });
       const messageObj = {
         id: messageItem._id,
@@ -94,7 +95,7 @@ exports.getGroupMessageList = async (senderId, threadId) => {
         userName: userRes.name,
       };
       return messageObj;
-    });
+    }));
 
     return { messages: messageListRes };
   } catch (error) {
