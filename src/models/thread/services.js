@@ -38,7 +38,7 @@ exports.getAllThread = async (userId) => {
 
 exports.getAll = async (data) => {
   try {
-    const thread = await Thread.find(data);
+    const thread = await Thread.find(data).sort({ createdAt: -1 });
     return thread;
   } catch (error) {
     throw error;
