@@ -10,20 +10,20 @@ exports.createThread = async (threadInput) => {
   try {
     let checkThread;
     if (threadInput.isGroup === false) {
-      let recipientsId = threadInput?.recipientsIds[0];
+      let recipientsId = threadInput.recipientsIds[0];
       const checkThreadRes = await Thread.getThread({
         $and: [{
           $or: [
             {
               $and: [
-                { lastSenderId: threadInput?.lastSenderId },
+                { lastSenderId: threadInput.lastSenderId },
                 { recipientsIds: { $in: [recipientsId] } },
               ],
             },
             {
               $and: [
                 { lastSenderId: recipientsId },
-                { recipientsIds: { $in: [threadInput?.lastSenderId] } },
+                { recipientsIds: { $in: [threadInput.lastSenderId] } },
               ],
             },
           ]
@@ -38,11 +38,11 @@ exports.createThread = async (threadInput) => {
     } else {
 
       const threadData = {
-        message: threadInput?.message,
-        lastSenderId: threadInput?.lastSenderId,
-        recipientsIds: threadInput?.recipientsIds,
+        message: threadInput.message,
+        lastSenderId: threadInput.lastSenderId,
+        recipientsIds: threadInput.recipientsIds,
         date: moment.utc(new Date()).format(),
-        isGroup: threadInput?.isGroup,
+        isGroup: threadInput.isGroup,
         groupName: threadInput.groupName,
       };
 
@@ -52,10 +52,10 @@ exports.createThread = async (threadInput) => {
 
       const messageData = {
         dateSend: moment.utc(new Date()).format(),
-        message: threadInput?.message,
+        message: threadInput.message,
         threadId: threadRes._id,
-        senderId: threadInput?.lastSenderId,
-        url: threadInput?.url
+        senderId: threadInput.lastSenderId,
+        url: threadInput.url
       };
       const message = await Message.create(messageData);
       return threadRes;
@@ -129,14 +129,14 @@ exports.getThreadList = async (userId) => {
 
       recipientsIdsArr.push({
         recipientsIds: String(threadListItems.recipientsIds[0]),
-        message: threadListItems?.message,
+        message: threadListItems.message,
         messageDate: threadListItems.createdAt,
         threadId: threadListItems._id,
         lastSenderId: threadListItems.lastSenderId,
         isGroup: threadListItems.isGroup,
-        groupName: threadListItems?.groupName,
+        groupName: threadListItems.groupName,
         recipientIds: arr,
-        isNotParticipants: threadListItems?.isNotParticipants
+        isNotParticipants: threadListItems.isNotParticipants
       });
     });
 
@@ -169,14 +169,14 @@ exports.getThreadList = async (userId) => {
           msisdn: user.msisdn,
           operator: user.operator,
           userId: user._id,
-          message: messageRes[0]?.message,
-          messageDate: messageRes[0]?.createdAt,
+          message: messageRes[0].message,
+          messageDate: messageRes[0].createdAt,
           threadId: arritem.threadId,
           isGroup: arritem.isGroup,
           groupName: arritem.groupName,
           recipientIds: arritem.recipientIds,
           isNotParticipant: arritem.isNotParticipants,
-          url: messageRes[0]?.url
+          url: messageRes[0].url
         };
 
         return recipientUser;
@@ -229,18 +229,18 @@ exports.getGroupDetails = async (groupId) => {
   try {
 
     const threadRes = await Thread.getById(groupId)
-    const deletedUser = threadRes?.deletedForUser
+    const deletedUser = threadRes.deletedForUser
 
     const participantsOfGroup = []
 
-    const groupFirstSender = await User.getById(threadRes?.lastSenderId)
+    const groupFirstSender = await User.getById(threadRes.lastSenderId)
 
 
 
     const senderOfGroupObj = {
-      name: groupFirstSender?.name,
-      mobile: groupFirstSender?.msisdn,
-      id: groupFirstSender?._id
+      name: groupFirstSender.name,
+      mobile: groupFirstSender.msisdn,
+      id: groupFirstSender._id
     }
 
     if (threadRes.isGroupAdmin.includes(groupFirstSender._id)) {
@@ -257,9 +257,9 @@ exports.getGroupDetails = async (groupId) => {
       const allGroupParticipants = await User.getById(recipientsIds)
 
       const participantsOfGroupObj = {
-        name: allGroupParticipants?.name,
-        mobile: allGroupParticipants?.msisdn,
-        id: allGroupParticipants?._id
+        name: allGroupParticipants.name,
+        mobile: allGroupParticipants.msisdn,
+        id: allGroupParticipants._id
       }
 
 
@@ -277,7 +277,7 @@ exports.getGroupDetails = async (groupId) => {
       groupName: threadRes.groupName,
       groupCreatedDate: threadRes.createdAt,
       participantsOfGroup: participantsOfGroup,
-      isGroupAdmin: threadRes?.isGroupAdmin
+      isGroupAdmin: threadRes.isGroupAdmin
     }
 
     return JSON.parse(JSON.stringify(groupDetailsObj))

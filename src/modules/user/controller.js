@@ -94,12 +94,12 @@ exports.getUserUsingApp = async (userData, userId) => {
             {
               $and: [
                 { lastSenderId: userId },
-                { recipientsIds: { $in: [userData?._id] } },
+                { recipientsIds: { $in: [userData._id] } },
               ],
             },
             {
               $and: [
-                { lastSenderId: userData?._id },
+                { lastSenderId: userData._id },
                 { recipientsIds: { $in: [userId] } },
               ],
             },
@@ -131,17 +131,17 @@ exports.getUserUsingApp = async (userData, userId) => {
         let threadIdRes;
 
         if (checkThread) {
-          threadIdRes = checkThread?._id;
+          threadIdRes = checkThread._id;
         }
 
         let userDataObjectRes;
 
         if (userData !== null) {
           const userDataObject = {
-            name: userData?.name,
-            msisdn: userData?.msisdn,
-            operator: userData?.operator,
-            userId: userData?._id,
+            name: userData.name,
+            msisdn: userData.msisdn,
+            operator: userData.operator,
+            userId: userData._id,
             threadId: threadIdRes,
           };
           userDataObjectRes = userDataObject;
@@ -152,7 +152,7 @@ exports.getUserUsingApp = async (userData, userId) => {
     );
 
     let userDataResObj = userDataRes.find(
-      (userDataItem) => userDataItem?.msisdn === user.msisdn
+      (userDataItem) => userDataItem.msisdn === user.msisdn
     );
 
     if (userDataRes.includes(undefined)) {
