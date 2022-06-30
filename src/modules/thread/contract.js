@@ -13,5 +13,7 @@ type Thread {
     isGroup: Boolean,
     groupName: String,
     deletedForUser: [String]
+    isGroupAdmin: [String]
+    isNotParticipants: [String]
 }
 `;

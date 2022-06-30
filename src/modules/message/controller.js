@@ -5,11 +5,19 @@ const moment = require("moment");
 
 exports.createMessage = async (messageInput) => {
   try {
+
+    const threadRes = await Thread.getById(messageInput.threadId)
+
+    if (threadRes?.deletedForUser.includes(messageInput?.receiverId)) {
+      await Thread.updateOne(messageInput?.threadId, messageInput?.receiverId)
+    }
+
     const messageData = {
       dateSend: moment.utc(new Date()).format(),
       message: messageInput.message,
       threadId: messageInput.threadId,
       senderId: messageInput.senderId,
+      url: messageInput?.url
     };
     if (messageInput.isAttachment) {
       messageData.attachmentType = messageInput.attachmentType;
@@ -66,6 +74,7 @@ exports.getMessageList = async (senderId, receiverId, threadId) => {
         senderId: messageItem.senderId,
         message: messageItem.message,
         dateSent: messageItem.createdAt,
+        url: messageItem.url
       };
       return messageObj;
     });

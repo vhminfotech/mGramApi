@@ -128,7 +128,8 @@ io.on("connection", (socket) => {
 
   const currTime = moment();
   //send and get message
-  socket.on("sendMessage", async (senderId, receiverId, text, name) => {
+  socket.on("sendMessage", async (senderId, receiverId, text, name, url) => {
+    console.log("url", url)
     const recive = []
     recive.push(receiverId)
     const user = await getUser(receiverId);
@@ -137,7 +138,7 @@ io.on("connection", (socket) => {
         senderId,
         text,
         currTime,
-        name
+        name, url
       });
     })
 

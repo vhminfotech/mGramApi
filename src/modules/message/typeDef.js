@@ -16,6 +16,7 @@ type MessageData{
     message: String,
     dateSent: Date,
     userName: String
+    url: String
 }
 
 type GetMessageListRes{
@@ -25,6 +26,7 @@ type GetMessageListRes{
 input MessageInput{
     threadId: ID,
     senderId: ID,
+    receiverId: ID
     message: String,
     dateSend: String,
     isAttachment: Boolean,
