@@ -36,6 +36,7 @@ exports.createThread = async (threadInput) => {
     if (checkThread) {
       return checkThread;
     } else {
+
       const threadData = {
         message: threadInput?.message,
         lastSenderId: threadInput?.lastSenderId,
@@ -47,11 +48,14 @@ exports.createThread = async (threadInput) => {
 
       const threadRes = await Thread.create(threadData);
 
+      const threadUpdateRes = await Thread.updateIsAdmin(threadRes._id, threadRes.lastSenderId)
+
       const messageData = {
         dateSend: moment.utc(new Date()).format(),
         message: threadInput?.message,
         threadId: threadRes._id,
         senderId: threadInput?.lastSenderId,
+        url: threadInput?.url
       };
       const message = await Message.create(messageData);
       return threadRes;
@@ -73,21 +77,42 @@ exports.getThread = async (threadId) => {
 exports.getThreadList = async (userId) => {
   try {
 
-    const threadRes = await Thread.getAll({
-      $and: [
-        {
-          $or: [{ lastSenderId: userId }, { recipientsIds: { $in: [userId] } }],
-        },
-        { deletedForUser: { $nin: [userId] } },
-      ],
-    });
-
     // const threadRes = await Thread.getAll({
-    //   $or: [{ lastSenderId: userId }, { recipientsIds: { $in: [userId] } }],
+    //   $and: [
+    //     {
+    //       $or: [{ lastSenderId: userId }, { recipientsIds: { $in: [userId] } }],
+    //     },
+    //     { deletedForUser: { $nin: [userId] } },
+    //   ],
     // });
 
+
+    const threadRes = await Thread.getAll({
+      $or: [{ lastSenderId: userId }, { recipientsIds: { $in: [userId] } }],
+    });
+
+    const threadsExcept = []
+
+    await Promise.all(threadRes.map(async (threadResItem) => {
+      if (threadResItem.isGroup === false) {
+
+        const threadDeleted = await Thread.getThread({
+          $and: [
+            {
+              _id: threadResItem._id
+            },
+            { deletedForUser: { $nin: [userId] } },
+          ],
+        })
+        if (threadDeleted) { threadsExcept.push(threadResItem) }
+
+      } else {
+        threadsExcept.push(threadResItem)
+      }
+    }))
+
     const recipientsIdsArr = []
-    threadRes.forEach((threadListItems) => {
+    threadsExcept.forEach((threadListItems) => {
       const arr = []
       threadListItems.recipientsIds.forEach((id, index) => {
         arr.push(id)
@@ -110,7 +135,8 @@ exports.getThreadList = async (userId) => {
         lastSenderId: threadListItems.lastSenderId,
         isGroup: threadListItems.isGroup,
         groupName: threadListItems?.groupName,
-        recipientIds: arr
+        recipientIds: arr,
+        isNotParticipants: threadListItems?.isNotParticipants
       });
     });
 
@@ -148,7 +174,9 @@ exports.getThreadList = async (userId) => {
           threadId: arritem.threadId,
           isGroup: arritem.isGroup,
           groupName: arritem.groupName,
-          recipientIds: arritem.recipientIds
+          recipientIds: arritem.recipientIds,
+          isNotParticipant: arritem.isNotParticipants,
+          url: messageRes[0]?.url
         };
 
         return recipientUser;
@@ -196,3 +224,138 @@ exports.deleteThread = async (deleteThreadInput) => {
     throw error;
   }
 };
+
+exports.getGroupDetails = async (groupId) => {
+  try {
+
+    const threadRes = await Thread.getById(groupId)
+    const deletedUser = threadRes?.deletedForUser
+
+    const participantsOfGroup = []
+
+    const groupFirstSender = await User.getById(threadRes?.lastSenderId)
+
+
+
+    const senderOfGroupObj = {
+      name: groupFirstSender?.name,
+      mobile: groupFirstSender?.msisdn,
+      id: groupFirstSender?._id
+    }
+
+    if (threadRes.isGroupAdmin.includes(groupFirstSender._id)) {
+      senderOfGroupObj.isAdmin = true
+    } else {
+      senderOfGroupObj.isAdmin = false
+    }
+
+    if (!deletedUser.includes(groupFirstSender._id)) {
+      participantsOfGroup.push(senderOfGroupObj)
+    }
+
+    await Promise.all(threadRes.recipientsIds.map(async (recipientsIds) => {
+      const allGroupParticipants = await User.getById(recipientsIds)
+
+      const participantsOfGroupObj = {
+        name: allGroupParticipants?.name,
+        mobile: allGroupParticipants?.msisdn,
+        id: allGroupParticipants?._id
+      }
+
+
+      if (threadRes.isGroupAdmin.includes(allGroupParticipants._id)) {
+        participantsOfGroupObj.isAdmin = true
+      } else {
+        participantsOfGroupObj.isAdmin = false
+      }
+
+      if (!deletedUser.includes(allGroupParticipants._id)) {
+        participantsOfGroup.push(participantsOfGroupObj)
+      }
+    }))
+    const groupDetailsObj = {
+      groupName: threadRes.groupName,
+      groupCreatedDate: threadRes.createdAt,
+      participantsOfGroup: participantsOfGroup,
+      isGroupAdmin: threadRes?.isGroupAdmin
+    }
+
+    return JSON.parse(JSON.stringify(groupDetailsObj))
+  } catch (error) {
+    throw error
+  }
+}
+
+
+exports.createUserAAdminOfGroup = async (groupId, userId) => {
+  try {
+
+    const threadUpdateRes = await Thread.updateIsAdmin(groupId, userId)
+    if (threadUpdateRes) {
+      return { message: "Admin Updated Successfully" }
+    } else {
+      return { message: "Admin Updation Failed" }
+    }
+
+  } catch (error) {
+    throw error
+  }
+}
+
+exports.exitGroup = async (groupId, userId) => {
+  try {
+    const threadUpdateRes = await Thread.update(groupId, userId)
+    const threadUpdateIsParticipant = await Thread.updateIsParticipant(groupId, userId)
+    if (threadUpdateIsParticipant) {
+      return { message: "You are no longer participant of the group" }
+    } else {
+      return { message: "Group Exit Updation Failed" }
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
+//TODO apply check if user removing user admin
+exports.dismissionAdmin = async (groupId, userId, userToBeDismissID) => {
+  try {
+
+    const threadUpdate = await Thread.getThread({ $and: [{ _id: groupId }, { isGroupAdmin: { $in: [userId] } }] })
+
+    if (!threadUpdate) {
+      return { message: "You Do Not Have Permission" }
+    }
+
+    const threadUpdateRes = await Thread.updateAdminByDeleteAdmin(groupId, userToBeDismissID)
+
+    if (threadUpdateRes) {
+      return { message: "User Removed As Admin" }
+    } else {
+      return { message: "User Removed As Admin Failed" }
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
+//TODO apply check if user removing user admin
+exports.removeParticipantFromGroupIfUAreAdmin = async (groupId, userId, userToBeRemoveFromGroupID) => {
+  try {
+    const threadUpdate = await Thread.getThread({ $and: [{ _id: groupId }, { isGroupAdmin: { $in: [userId] } }] })
+
+
+    if (!threadUpdate) {
+      return { message: "You Do Not Have Permission" }
+    }
+
+    const threadUpdateRes = await Thread.update(groupId, userToBeRemoveFromGroupID)
+    const threadUpdateIsParticipant = await Thread.updateIsParticipant(groupId, userToBeRemoveFromGroupID)
+    if (threadUpdateRes && threadUpdateIsParticipant) {
+      return { message: "You are no longer participant of the group" }
+    } else {
+      return { message: "Group Exit Updation Failed" }
+    }
+  } catch (error) {
+    throw error
+  }
+}

@@ -15,6 +15,8 @@ const threadSchema = new mongoose.Schema(
     isGroup: { type: Boolean, default: false },
     groupName: { type: String },
     deletedForUser: { type: [String] },
+    isGroupAdmin: { type: [String] },
+    isNotParticipants: { type: [String] }
   },
   {
     timestamps: true,

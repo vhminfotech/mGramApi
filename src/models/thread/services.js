@@ -74,3 +74,52 @@ exports.updateOne = async (threadId, updateObject) => {
     throw error;
   }
 };
+
+exports.updateIsAdmin = async (threadId, updateObject) => {
+  try {
+    const thread = await Thread.updateOne(
+      { _id: threadId },
+      { $push: { isGroupAdmin: [updateObject] } },
+      { new: true }
+    );
+    return thread;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+exports.updateIsParticipant = async (threadId, updateObject) => {
+  try {
+    const thread = await Thread.updateOne(
+      { _id: threadId },
+      { $push: { isNotParticipants: [updateObject] } },
+      { new: true }
+    );
+    return thread;
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.updateAdminByDeleteAdmin = async (threadId, updateObject) => {
+  try {
+    const thread = await Thread.updateOne(
+      { _id: threadId },
+      { $pullAll: { isGroupAdmin: [updateObject] } },
+      { new: true }
+    );
+    return thread;
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.getThreadAdmin = async (data, dataObj) => {
+  try {
+    const thread = await Thread.findOne(data, dataObj);
+    return thread;
+  } catch (error) {
+    throw error;
+  }
+};

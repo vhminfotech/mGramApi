@@ -1,4 +1,6 @@
 const Attachment = require("../../models/attachment/services");
+const path = require("path")
+const fs = require("fs")
 
 exports.createAttachment = async (attachmentInput) => {
   try {
@@ -22,3 +24,21 @@ exports.getAttachment = async (id) => {
     throw error;
   }
 };
+
+exports.uploadAttachments = async (files) => {
+  try {
+    console.log("files", files)
+    const { createReadStream, filename, mimetype, encoding } = await files.file;
+    const stream = createReadStream()
+    const pathName = path.join(__dirname, `../../../public/uploads/${filename}`)
+
+    await stream.pipe(fs.createWriteStream(pathName))
+
+    return {
+      uri: `https://0950-182-77-120-6.in.ngrok.io/uploads/${filename}`,
+
+    };
+  } catch (error) {
+    throw error
+  }
+}
