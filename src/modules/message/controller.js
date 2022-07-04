@@ -8,8 +8,8 @@ exports.createMessage = async (messageInput) => {
 
     const threadRes = await Thread.getById(messageInput.threadId)
 
-    if (threadRes.deletedForUser.includes(messageInput.receiverId)) {
-      await Thread.updateOne(messageInput.threadId, messageInput.receiverId)
+    if (threadRes?.deletedForUser.includes(messageInput?.receiverId)) {
+      await Thread.updateOne(messageInput?.threadId, messageInput?.receiverId)
     }
 
     const messageData = {
@@ -17,7 +17,7 @@ exports.createMessage = async (messageInput) => {
       message: messageInput.message,
       threadId: messageInput.threadId,
       senderId: messageInput.senderId,
-      url: messageInput.url
+      url: messageInput?.url
     };
     if (messageInput.isAttachment) {
       messageData.attachmentType = messageInput.attachmentType;
