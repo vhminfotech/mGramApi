@@ -137,3 +137,30 @@ exports.deleteMessages = async (deleteMessageInput) => {
     throw error;
   }
 };
+
+exports.forwardMessage = async (messageInput) => {
+  try {
+
+    const threadRes = await Thread.getById(messageInput.threadId)
+
+    if (threadRes?.deletedForUser.includes(messageInput?.receiverId)) {
+      await Thread.updateOne(messageInput?.threadId, messageInput?.receiverId)
+    }
+
+    const messageData = {
+      dateSend: moment.utc(new Date()).format(),
+      message: messageInput.message,
+      threadId: messageInput.threadId,
+      senderId: messageInput.senderId,
+      url: messageInput?.url,
+      isForwarded: true,
+
+    };
+
+    const messageRes = await Message.create(messageData);
+
+    return messageRes;
+  } catch (error) {
+    throw error
+  }
+}

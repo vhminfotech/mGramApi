@@ -35,7 +35,7 @@ exports.uploadAttachments = async (files) => {
     await stream.pipe(fs.createWriteStream(pathName))
 
     return {
-      uri: `http://192.168.25.204:81/uploads/${filename}`,
+      uri: `https://7cb2-117-97-173-7.in.ngrok.io/uploads/${filename}`,
 
     };
   } catch (error) {

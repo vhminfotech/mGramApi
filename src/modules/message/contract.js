@@ -11,5 +11,6 @@ type Message {
     url: String,
     isDeleted: Boolean
     deletedForUser: [String]
+    isForwarded: Boolean,
 }
 `;
