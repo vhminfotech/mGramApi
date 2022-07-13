@@ -24,7 +24,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // GraphQL
 app.use(
   "/graphql",
-  graphqlUploadExpress({ maxFileSize: 2000000000, maxFiles: 2 }),
+  graphqlUploadExpress({ maxFileSize: 20000000000000000, maxFiles: 2 }),
   graphqlHTTP((request, response, graphQLParams) => ({
     schema: applyMiddleware(schema, permissions),
     graphiql: true,

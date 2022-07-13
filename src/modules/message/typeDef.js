@@ -26,13 +26,14 @@ type GetMessageListRes{
 input MessageInput{
     threadId: ID,
     senderId: ID,
-    receiverId: ID
+    receiverId: ID,
     message: String,
     dateSend: String,
     isAttachment: Boolean,
     attachmentType: AttachmentTypeEnum
     attachmentId: ID,
     url: String,
+    isForwarded: Boolean,
 }
 
 type DeleteMessageRes{
@@ -57,6 +58,7 @@ type Query{
 type Mutation {
     createMessage(messageInput : MessageInput): Message
     deleteMessages(deleteMessageInput : DeleteMessageInput): DeleteMessageRes
+    forwardMessage(messageInput: MessageInput): Message
 }
 `;
 
