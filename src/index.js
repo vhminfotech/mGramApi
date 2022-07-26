@@ -134,7 +134,7 @@ io.on("connection", (socket) => {
     recive.push(receiverId)
     const user = await getUser(receiverId);
     user.forEach((userItem) => {
-      io.to(userItem.socketId).emit("getMessage", {
+      io.to(userItem?.socketId).emit("getMessage", {
         senderId,
         text,
         currTime,

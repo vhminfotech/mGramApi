@@ -82,6 +82,7 @@ exports.createUser = async (name, operatorId, msisdn) => {
 // list of contacts using all mgram
 exports.getUserUsingApp = async (userData, userId) => {
   try {
+    console.log("userData", userData)
     const user = await User.getById({ _id: userId });
     const userDataRes = await Promise.all(
       userData.map(async (users) => {
@@ -94,12 +95,12 @@ exports.getUserUsingApp = async (userData, userId) => {
             {
               $and: [
                 { lastSenderId: userId },
-                { recipientsIds: { $in: [userData._id] } },
+                { recipientsIds: { $in: [userData?._id] } },
               ],
             },
             {
               $and: [
-                { lastSenderId: userData._id },
+                { lastSenderId: userData?._id },
                 { recipientsIds: { $in: [userId] } },
               ],
             },
@@ -131,28 +132,29 @@ exports.getUserUsingApp = async (userData, userId) => {
         let threadIdRes;
 
         if (checkThread) {
-          threadIdRes = checkThread._id;
+          threadIdRes = checkThread?._id;
         }
 
         let userDataObjectRes;
 
         if (userData !== null) {
           const userDataObject = {
-            name: userData.name,
-            msisdn: userData.msisdn,
-            operator: userData.operator,
-            userId: userData._id,
+            name: userData?.name,
+            msisdn: userData?.msisdn,
+            operator: userData?.operator,
+            userId: userData?._id,
             threadId: threadIdRes,
           };
           userDataObjectRes = userDataObject;
         }
+        console.log("userDataObjectRes", userDataObjectRes)
 
         return userDataObjectRes;
       })
     );
 
     let userDataResObj = userDataRes.find(
-      (userDataItem) => userDataItem.msisdn === user.msisdn
+      (userDataItem) => userDataItem?.msisdn === user.msisdn
     );
 
     if (userDataRes.includes(undefined)) {
