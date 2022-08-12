@@ -4,6 +4,7 @@ type Thread {
     id: ID
     lastSenderId: ID,
     message: String,
+    messageId: ID
     date: String,
     recipientsIds: [ID],
     currentUser: Int,

@@ -6,6 +6,7 @@ const threadSchema = new mongoose.Schema(
   {
     lastSenderId: { type: Schema.Types.ObjectId, ref: MONGOOSE_MODEL.USER },
     message: { type: String },
+    messageId: { type: Schema.Types.ObjectId, ref: MONGOOSE_MODEL.MESSAGE },
     date: { type: String },
     recipientsIds: { type: [Schema.Types.ObjectId], ref: MONGOOSE_MODEL.USER },
     currentUser: { type: Number },

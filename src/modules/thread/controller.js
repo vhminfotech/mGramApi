@@ -58,7 +58,13 @@ exports.createThread = async (threadInput) => {
         url: threadInput?.url
       };
       const message = await Message.create(messageData);
-      return threadRes;
+
+      const updateThreadObj = {
+        messageId: message?._id
+      }
+
+      const updateThreadRes = await Thread.getByIdAndUpdate(threadRes._id, updateThreadObj)
+      return updateThreadRes;
     }
   } catch (error) {
     throw error;
