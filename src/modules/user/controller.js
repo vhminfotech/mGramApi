@@ -82,6 +82,7 @@ exports.createUser = async (name, operatorId, msisdn) => {
 // list of contacts using all mgram
 exports.getUserUsingApp = async (userData, userId) => {
   try {
+    console.log("userData", userData)
     const user = await User.getById({ _id: userId });
     const userDataRes = await Promise.all(
       userData.map(async (users) => {

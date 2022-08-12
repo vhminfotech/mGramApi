@@ -16,6 +16,7 @@ const messageSchema = new mongoose.Schema(
     url: { type: String },
     isDeleted: { type: Boolean, default: false },
     deletedForUser: { type: [String], default: [] },
+    isForwarded: { type: Boolean, default: false },
   },
   {
     timestamps: true,

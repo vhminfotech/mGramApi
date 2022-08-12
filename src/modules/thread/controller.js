@@ -8,6 +8,7 @@ const { getMessageList } = require("../message/controller");
 
 exports.createThread = async (threadInput) => {
   try {
+    console.log("threadInput", threadInput)
     let checkThread;
     if (threadInput.isGroup === false) {
       let recipientsId = threadInput?.recipientsIds[0];
