@@ -144,6 +144,28 @@ io.on("connection", (socket) => {
 
   });
 
+  io.on('received', function (options) {
+    var options = {
+      timetoken: moment().valueOf(),
+      userID: options.message.SENDER_ID,
+      messageID: options.message.MESSAGE_ID
+    };
+
+    // Emit 'delivered' event
+    socket.emit('delivered', options);
+  });
+
+  io.on('markSeen', function (options) {
+    var options = {
+      timetoken: moment().valueOf(),
+      userID: options.message.SENDER_ID,
+      messageID: options.message.MESSAGE_ID
+    };
+
+    // Emit 'markedSeen' event
+    socket.emit('markedSeen', options);
+  });
+
   //when disconnect
   socket.on("disconnect", () => {
     removeUser(socket.id);

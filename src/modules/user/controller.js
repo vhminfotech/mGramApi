@@ -147,7 +147,7 @@ exports.getUserUsingApp = async (userData, userId) => {
           };
           userDataObjectRes = userDataObject;
         }
-        console.log("userDataObjectRes", userDataObjectRes)
+        
 
         return userDataObjectRes;
       })

@@ -123,3 +123,16 @@ exports.getThreadAdmin = async (data, dataObj) => {
     throw error;
   }
 };
+
+exports.getByIdAndUpdate = async (id, updateValues) => {
+  try {
+    const thread = Thread.findByIdAndUpdate(
+      id,
+      { $set: updateValues },
+      { new: true }
+    );
+    return thread;
+  } catch (error) {
+    throw error;
+  }
+};

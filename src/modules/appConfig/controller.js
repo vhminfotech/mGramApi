@@ -18,9 +18,9 @@ exports.createAppConfig = async (operatorId, appConfig) => {
 
 exports.getAppConfig = async (operatorId) => {
   try {
-    const getAccessRes = await Operator.getOperator({
-      operatorId: operatorId,
-    });
+    // const getAccessRes = await Operator.getOperator({
+    //   operatorId: operatorId,
+    // });
 
     const appConfigResData = await AppConfig.getAppConfig({
       operatorId: operatorId,
