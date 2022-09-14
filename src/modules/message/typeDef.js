@@ -20,7 +20,8 @@ type MessageData{
 }
 
 type GetMessageListRes{
-    messages: [MessageData]
+    messages: [MessageData],
+    blocked: Boolean
 }
 
 input MessageInput{

@@ -27,7 +27,7 @@ exports.getAttachment = async (id) => {
 
 exports.uploadAttachments = async (files) => {
   try {
-    console.log("files", files)
+    
     const { createReadStream, filename, mimetype, encoding } = await files.file;
     const stream = createReadStream()
     const pathName = path.join(__dirname, `../../../public/uploads/${filename}`)

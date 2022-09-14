@@ -4,6 +4,7 @@ const http = require("http").Server(app);
 const io = require("socket.io")(http);
 const { PORT } = require("./utils/constants");
 const moment = require("moment");
+const User = require("./models/user/services");
 
 connectToDB();
 
@@ -129,41 +130,70 @@ io.on("connection", (socket) => {
   const currTime = moment();
   //send and get message
   socket.on("sendMessage", async (senderId, receiverId, text, name, url) => {
-    console.log("url", url)
-    const recive = []
-    recive.push(receiverId)
-    const user = await getUser(receiverId);
-    user.forEach((userItem) => {
-      io.to(userItem?.socketId).emit("getMessage", {
-        senderId,
-        text,
-        currTime,
-        name, url
+
+    var commasepReceiverId = receiverId.replace(/[\[\]']+/g, '')
+    const myArray = commasepReceiverId.split(",");
+
+    let userArrayLength = myArray.length
+    if (userArrayLength === 1) {
+
+      const userRes = await User.getById(commasepReceiverId)
+
+      var userIsInArray = userRes.blockdUser.some(function (blockedUserItem) {
+        return blockedUserItem === senderId;
       });
-    })
+
+      if (userIsInArray === false) {
+        const recive = []
+        recive.push(receiverId)
+        const user = await getUser(receiverId);
+        user.forEach((userItem) => {
+          io.to(userItem?.socketId).emit("getMessage", {
+            senderId,
+            text,
+            currTime,
+            name, url
+          });
+        })
+      }
+    } else {
+      const recive = []
+      recive.push(receiverId)
+      const user = await getUser(receiverId);
+      user.forEach((userItem) => {
+        io.to(userItem?.socketId).emit("getMessage", {
+          senderId,
+          text,
+          currTime,
+          name, url
+        });
+      })
+    }
 
   });
 
-  io.on('received', function (options) {
+  socket.on('received', function (SENDER_ID, MESSAGE_ID) {
+
     var options = {
       timetoken: moment().valueOf(),
-      userID: options.message.SENDER_ID,
-      messageID: options.message.MESSAGE_ID
+      userID: SENDER_ID,
+      messageID: MESSAGE_ID
     };
-
+    console.log("options received", options)
     // Emit 'delivered' event
-    socket.emit('delivered', options);
+    io.emit('delivered', options);
   });
 
-  io.on('markSeen', function (options) {
+  socket.on('markSeen', function (SENDER_ID, MESSAGE_ID) {
+    
     var options = {
       timetoken: moment().valueOf(),
-      userID: options.message.SENDER_ID,
-      messageID: options.message.MESSAGE_ID
+      userID: SENDER_ID,
+      messageID: MESSAGE_ID
     };
-
+    console.log("options markSeen", options)
     // Emit 'markedSeen' event
-    socket.emit('markedSeen', options);
+    io.emit('markedSeen', options);
   });
 
   //when disconnect

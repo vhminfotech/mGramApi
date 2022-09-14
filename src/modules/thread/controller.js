@@ -8,7 +8,7 @@ const { getMessageList } = require("../message/controller");
 
 exports.createThread = async (threadInput) => {
   try {
-    console.log("threadInput", threadInput)
+    
     let checkThread;
     if (threadInput.isGroup === false) {
       let recipientsId = threadInput?.recipientsIds[0];
@@ -30,6 +30,19 @@ exports.createThread = async (threadInput) => {
           ]
         }, { isGroup: false }]
       });
+
+      if (checkThreadRes) {
+        const allUserChat = []
+        allUserChat.push(String(checkThreadRes?.lastSenderId))
+        checkThreadRes?.deletedForUser.map((item) => {
+          allUserChat.push(item)
+        })
+
+        allUserChat?.map(async (allUserChatItem) => {
+          await Thread.updateOne(checkThreadRes?._id, allUserChatItem)
+        })
+
+      }
 
       checkThread = checkThreadRes;
     }
@@ -83,7 +96,7 @@ exports.getThread = async (threadId) => {
 
 exports.getThreadList = async (userId) => {
   try {
-
+    
     // const threadRes = await Thread.getAll({
     //   $and: [
     //     {
@@ -97,26 +110,30 @@ exports.getThreadList = async (userId) => {
     const threadRes = await Thread.getAll({
       $or: [{ lastSenderId: userId }, { recipientsIds: { $in: [userId] } }],
     });
-
+    
     const threadsExcept = []
 
     await Promise.all(threadRes.map(async (threadResItem) => {
-      if (threadResItem.isGroup === false) {
+      // if (threadResItem.isGroup === false) {
 
-        const threadDeleted = await Thread.getThread({
-          $and: [
-            {
-              _id: threadResItem._id
-            },
-            { deletedForUser: { $nin: [userId] } },
-          ],
-        })
-        if (threadDeleted) { threadsExcept.push(threadResItem) }
+      const threadDeleted = await Thread.getThread({
+        $and: [
+          {
+            _id: threadResItem._id
+          },
+          { deletedForUser: { $nin: [userId] } },
+        ],
+      })
+      
+      if (threadDeleted) { threadsExcept.push(threadResItem) }
 
-      } else {
-        threadsExcept.push(threadResItem)
-      }
+      // } 
+      // else {
+      //   threadsExcept.push(threadResItem)
+      // }
     }))
+
+    // console.log("threadsExcept", threadsExcept)
 
     const recipientsIdsArr = []
     threadsExcept.forEach((threadListItems) => {
@@ -189,11 +206,11 @@ exports.getThreadList = async (userId) => {
         return recipientUser;
       })
     );
-
+    // console.log("threadList", threadList)
     const threadListRes = threadList.filter(
       (threadListItem) => threadListItem.message !== undefined
     );
-
+    // console.log("threadListRes", threadListRes)
     return { recipientUser: JSON.parse(JSON.stringify(threadListRes)) };
   } catch (error) {
     throw error;
@@ -203,6 +220,7 @@ exports.getThreadList = async (userId) => {
 //thread Delete
 exports.deleteThread = async (deleteThreadInput) => {
   try {
+    // console.log("deleteThreadInput", deleteThreadInput)
     const updateObject = deleteThreadInput.userId;
     const deleteThreadRes = deleteThreadInput.threadId.map(
       async (deleteThreadInputItem) => {
