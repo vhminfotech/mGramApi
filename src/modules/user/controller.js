@@ -82,7 +82,7 @@ exports.createUser = async (name, operatorId, msisdn) => {
 // list of contacts using all mgram
 exports.getUserUsingApp = async (userData, userId) => {
   try {
-    console.log("userData", userData)
+
     const user = await User.getById({ _id: userId });
     const userDataRes = await Promise.all(
       userData.map(async (users) => {
@@ -147,7 +147,7 @@ exports.getUserUsingApp = async (userData, userId) => {
           };
           userDataObjectRes = userDataObject;
         }
-        
+
 
         return userDataObjectRes;
       })
@@ -186,3 +186,39 @@ exports.getUserUsingApp = async (userData, userId) => {
     throw error;
   }
 };
+
+//Block User
+
+exports.blockUser = async (userId, userIdToBlock) => {
+  try {
+    const updateObject = userIdToBlock
+    const userRes = await User.update(userId, updateObject)
+    if (userRes) {
+      error = false
+    } else {
+      error = true
+    }
+    return {
+      error: error
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
+exports.unblockUser = async (userId, userIdToUnblock) => {
+  try {
+    const updateObject = userIdToUnblock
+    const userRes = await User.updateToDelete(userId, updateObject)
+    if (userRes) {
+      error = false
+    } else {
+      error = true
+    }
+    return {
+      error: error
+    }
+  } catch (error) {
+    throw error
+  }
+}

@@ -5,25 +5,51 @@ const moment = require("moment");
 
 exports.createMessage = async (messageInput) => {
   try {
-
+    
+    let blockedMessage
     const threadRes = await Thread.getById(messageInput.threadId)
 
     if (threadRes?.deletedForUser.includes(messageInput?.receiverId)) {
       await Thread.updateOne(messageInput?.threadId, messageInput?.receiverId)
     }
+    let userRes
+
+    if (messageInput?.receiverId) {
+      const userResult = await User.getById(messageInput?.receiverId)
+      userRes = userResult
+    }
+
+    let userIsInArray
+    if (userRes) {
+      let userIsInArrayRes = userRes.blockdUser.some(function (blockedUserItem) {
+        return blockedUserItem === messageInput.senderId;
+      });
+      userIsInArray = userIsInArrayRes
+    }
+
+
+    if (userIsInArray === true) {
+      blockedMessage = true
+    } else {
+      blockedMessage = false
+    }
+
+
 
     const messageData = {
       dateSend: moment.utc(new Date()).format(),
       message: messageInput.message,
       threadId: messageInput.threadId,
       senderId: messageInput.senderId,
-      url: messageInput?.url
+      url: messageInput?.url,
+      blockedMessage: blockedMessage
     };
     if (messageInput.isAttachment) {
       messageData.attachmentType = messageInput.attachmentType;
     }
 
     const messageRes = await Message.create(messageData);
+    
 
     return messageRes;
   } catch (error) {
@@ -33,7 +59,7 @@ exports.createMessage = async (messageInput) => {
 
 exports.getMessageList = async (senderId, receiverId, threadId) => {
   try {
-
+    
     const checkThread = await Thread.getThread({
       $and: [{
         $or: [
@@ -53,6 +79,7 @@ exports.getMessageList = async (senderId, receiverId, threadId) => {
       }, { isGroup: false }]
     });
 
+
     let threadIdObjRes;
 
     if (checkThread) {
@@ -63,9 +90,13 @@ exports.getMessageList = async (senderId, receiverId, threadId) => {
       threadIdObjRes = threadIdObj;
     }
 
-    const messageRes = await Message.getAllMessage({
-      $and: [threadIdObjRes, { deletedForUser: { $nin: [senderId] } }],
-    });
+    let messageRes
+    if (threadIdObjRes) {
+      const messageResult = await Message.getAllMessage({
+        $and: [threadIdObjRes, { deletedForUser: { $nin: [senderId] } }, { blockedMessage: false }],
+      });
+      messageRes = messageResult
+    }
 
     const messageListRes = messageRes.map((messageItem) => {
       const messageObj = {
@@ -79,7 +110,15 @@ exports.getMessageList = async (senderId, receiverId, threadId) => {
       return messageObj;
     });
 
-    return { messages: messageListRes };
+    const userRes = await User.getById(senderId)
+
+    var userIsInArray = userRes.blockdUser.some(function (blockedUserItem) {
+      return blockedUserItem === receiverId;
+    });
+
+    
+
+    return { messages: messageListRes, blocked: userIsInArray };
   } catch (error) {
     throw error;
   }
@@ -106,6 +145,7 @@ exports.getGroupMessageList = async (senderId, threadId) => {
       return messageObj;
     }));
 
+    
     return { messages: messageListRes };
   } catch (error) {
     throw error;

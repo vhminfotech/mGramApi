@@ -12,6 +12,18 @@ const resolvers = {
       _context,
       _info
     ) => await UserController.createUser(name, operatorId, msisdn),
+    blockUser: async (
+      _parent,
+      { userId, userIdToBlock },
+      _context,
+      _info
+    ) => await UserController.blockUser(userId, userIdToBlock),
+    unblockUser: async (
+      _parent,
+      { userId, userIdToUnblock },
+      _context,
+      _info
+    ) => await UserController.unblockUser(userId, userIdToUnblock),
   },
 };
 module.exports = resolvers;

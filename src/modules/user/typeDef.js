@@ -31,6 +31,10 @@ type UserDataResponse{
     userData: [UserData]
 }
 
+type BlockRes{
+    error: String
+}
+
 type Query{
     getUserUsingApp(userData: [String],userId: ID,threadId: ID): UserDataResponse
     getAllUsers: User
@@ -38,6 +42,8 @@ type Query{
 
 type Mutation {
     registerUser(name: String, operatorId:ID, msisdn:String): CreateUser
+    blockUser(userId: ID, userIdToBlock: ID): BlockRes
+    unblockUser(userId: ID, userIdToUnblock: ID): BlockRes
 }
 `;
 

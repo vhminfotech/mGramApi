@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema(
     operator: { type: String },
     deletedAt: { type: Date },
     msisdn: { type: String, trim: true },
+    blockdUser: { type: [String], default: [] }
   },
   {
     timestamps: true,

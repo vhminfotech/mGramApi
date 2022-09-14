@@ -26,3 +26,29 @@ exports.getUser = async (data) => {
     throw error;
   }
 };
+
+
+exports.update = async (userId, updateObject) => {
+  try {
+    const user = await User.updateOne(
+      { _id: userId },
+      { $push: { blockdUser: [updateObject] } }
+    );
+    return user;
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.updateToDelete = async (userId, updateObject) => {
+  try {
+
+    const user = await User.updateOne(
+      { _id: userId },
+      { $pullAll: { blockdUser: [updateObject] } }
+    );
+    return user;
+  } catch (error) {
+    throw error;
+  }
+};
