@@ -49,7 +49,7 @@ exports.createMessage = async (messageInput) => {
     }
 
     const messageRes = await Message.create(messageData);
-    
+
 
     return messageRes;
   } catch (error) {
@@ -57,9 +57,9 @@ exports.createMessage = async (messageInput) => {
   }
 };
 
-exports.getMessageList = async (senderId, receiverId, threadId) => {
+exports.getMessageList = async (senderId, receiverId, threadId, userId) => {
   try {
-    
+
     const checkThread = await Thread.getThread({
       $and: [{
         $or: [
@@ -79,7 +79,6 @@ exports.getMessageList = async (senderId, receiverId, threadId) => {
       }, { isGroup: false }]
     });
 
-
     let threadIdObjRes;
 
     if (checkThread) {
@@ -98,14 +97,24 @@ exports.getMessageList = async (senderId, receiverId, threadId) => {
       messageRes = messageResult
     }
 
-    const messageListRes = messageRes.map((messageItem) => {
+    const messageListRes = messageRes.map(async (messageItem) => {
+
+      let read = false
+      if (userId !== messageItem.senderId) {
+        const updateThreadObj = {
+          read: true
+        }
+        const updateThreadRes = await Message.getByIdAndUpdate(messageItem._id, updateThreadObj)
+        read = true
+      }
       const messageObj = {
         id: messageItem._id,
         threadId: messageItem.threadId,
         senderId: messageItem.senderId,
         message: messageItem.message,
         dateSent: messageItem.createdAt,
-        url: messageItem.url
+        url: messageItem.url,
+        read: read
       };
       return messageObj;
     });
@@ -116,7 +125,7 @@ exports.getMessageList = async (senderId, receiverId, threadId) => {
       return blockedUserItem === receiverId;
     });
 
-    
+
 
     return { messages: messageListRes, blocked: userIsInArray };
   } catch (error) {
@@ -145,7 +154,7 @@ exports.getGroupMessageList = async (senderId, threadId) => {
       return messageObj;
     }));
 
-    
+
     return { messages: messageListRes };
   } catch (error) {
     throw error;

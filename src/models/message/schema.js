@@ -18,6 +18,7 @@ const messageSchema = new mongoose.Schema(
     deletedForUser: { type: [String], default: [] },
     isForwarded: { type: Boolean, default: false },
     blockedMessage: { type: Boolean, default: false },
+    read: { type: Boolean, default: false },
 
   },
   {
