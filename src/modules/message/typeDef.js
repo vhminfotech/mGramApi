@@ -17,6 +17,7 @@ type MessageData{
     dateSent: Date,
     userName: String
     url: String
+    read: String
 }
 
 type GetMessageListRes{

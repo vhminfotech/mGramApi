@@ -131,6 +131,32 @@ io.on("connection", (socket) => {
   //send and get message
   socket.on("sendMessage", async (senderId, receiverId, text, name, url) => {
 
+    let read = false
+    let readReadSender
+    users.forEach((userItem) => {
+
+      if (senderId == userItem?.userId) {
+        readReadSender = userItem?.socketId
+      }
+      var commasepReceiverId = receiverId.replace(/[\[\]']+/g, '')
+      const myArray = commasepReceiverId.split(",");
+
+      myArray.forEach(receiverIdItem => {
+        if (receiverIdItem == userItem?.userId) {
+          read = true
+        }
+      });
+
+
+    })
+
+    io.to(readReadSender).emit("getReadMessage", {
+      senderId,
+      text,
+      url,
+      read
+    });
+
     var commasepReceiverId = receiverId.replace(/[\[\]']+/g, '')
     const myArray = commasepReceiverId.split(",");
 
@@ -152,7 +178,8 @@ io.on("connection", (socket) => {
             senderId,
             text,
             currTime,
-            name, url
+            name,
+            url,
           });
         })
       }
@@ -165,7 +192,8 @@ io.on("connection", (socket) => {
           senderId,
           text,
           currTime,
-          name, url
+          name,
+          url,
         });
       })
     }
@@ -179,19 +207,18 @@ io.on("connection", (socket) => {
       userID: SENDER_ID,
       messageID: MESSAGE_ID
     };
-    console.log("options received", options)
     // Emit 'delivered' event
     io.emit('delivered', options);
   });
 
   socket.on('markSeen', function (SENDER_ID, MESSAGE_ID) {
-    
+
     var options = {
       timetoken: moment().valueOf(),
       userID: SENDER_ID,
       messageID: MESSAGE_ID
     };
-    console.log("options markSeen", options)
+
     // Emit 'markedSeen' event
     io.emit('markedSeen', options);
   });

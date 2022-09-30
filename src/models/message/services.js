@@ -60,3 +60,16 @@ exports.updateAllMessage = async (threadId, updateObject) => {
     throw error;
   }
 };
+
+exports.getByIdAndUpdate = async (id, updateValues) => {
+  try {
+    const message = Message.findByIdAndUpdate(
+      id,
+      { $set: updateValues },
+      { new: true }
+    );
+    return message;
+  } catch (error) {
+    throw error;
+  }
+};
