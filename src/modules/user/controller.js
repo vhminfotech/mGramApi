@@ -4,6 +4,9 @@ const Operator = require("../../models/operator/services");
 const Thread = require("../../models/thread/services");
 const { messages } = require("../../utils/message");
 const { deleteOne } = require("../../models/thread");
+const utils = require("./utils");
+const { sendOTP } = require("../../libs/otp")
+const { OTP_EXPIRY } = require("./constants");
 
 //create token
 exports.getToken = (name, msisdn) => {
@@ -68,8 +71,21 @@ exports.createUser = async (name, operatorId, msisdn) => {
       token = tokenRes;
       userDataRes = userDataResIfUserExist;
     }
+
+    const otp = utils.generateOtp();
+
+    const otpRes = await sendOTP(msisdn, otp)
+
+    const queryObject = { _id: userDataRes.userId };
+    const updateObject = {
+      otp: { expiry: new Date().getTime() + OTP_EXPIRY, value: otp },
+    };
+
+
+    const updatedUser = await User.updateUser(queryObject, updateObject);
+
     return {
-      message: "User Registred Successfully",
+      message: "User Registered Successfully",
       token,
       status: 1,
       userData: userDataRes,
@@ -217,6 +233,37 @@ exports.unblockUser = async (userId, userIdToUnblock) => {
     }
     return {
       error: error
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
+exports.verifyOTP = async (msisdn, otp) => {
+  try {
+    const user = await User.getUser({ msisdn: msisdn });
+
+    const savedOtpRes = user.otp ? user.otp.value : null;
+    const expiry = user.otp ? user.otp.expiry : 0;
+    const currentDate = new Date();
+    const differenceRes = expiry.getTime() - currentDate.getTime();
+    difference = differenceRes
+    savedOtp = savedOtpRes
+    let error, message
+
+    if (difference <= 0) {
+      message = "Otp Has expired";
+      error = true;
+    } else if (otp === savedOtp) {
+      message = "Otp Verified Successfully";
+      error = false;
+    } else {
+      message = "Otp Doesn't match";
+      error = true;
+    }
+
+    return {
+      error, message
     }
   } catch (error) {
     throw error

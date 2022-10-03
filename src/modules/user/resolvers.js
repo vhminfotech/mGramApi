@@ -4,6 +4,8 @@ const resolvers = {
   Query: {
     getUserUsingApp: async (_parent, { userData, userId }, _context, _info) =>
       await UserController.getUserUsingApp(userData, userId),
+    verifyOTP: async (_parent, { msisdn, otp }, _context, _info) =>
+      await UserController.verifyOTP(msisdn, otp),
   },
   Mutation: {
     registerUser: async (
