@@ -52,3 +52,16 @@ exports.updateToDelete = async (userId, updateObject) => {
     throw error;
   }
 };
+
+exports.updateUser = async (queryObject, updateObject) => {
+  try {
+      const user = await User.findByIdAndUpdate(
+          queryObject,
+          { $set: updateObject },
+          { new: true }
+      );
+      return user;
+  } catch (error) {
+      throw error;
+  }
+};

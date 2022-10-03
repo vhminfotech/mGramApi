@@ -35,9 +35,15 @@ type BlockRes{
     error: String
 }
 
+type VerifyOTPRes{
+    error: Boolean
+    message: String
+}
+
 type Query{
     getUserUsingApp(userData: [String],userId: ID,threadId: ID): UserDataResponse
     getAllUsers: User
+    verifyOTP(msisdn:String,otp: String): VerifyOTPRes
 }
 
 type Mutation {
