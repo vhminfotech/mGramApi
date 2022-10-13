@@ -22,6 +22,10 @@ const resolvers = {
       await ThreadController.dismissionAdmin(groupId, userId, userToBeDismissID),
     removeParticipantFromGroupIfUAreAdmin: async (_parent, { groupId, userId, userToBeRemoveFromGroupID }, _context, _info) =>
       await ThreadController.removeParticipantFromGroupIfUAreAdmin(groupId, userId, userToBeRemoveFromGroupID),
+    muteChat: async (_parent, { userId, threadId }, _context, _info) =>
+      await ThreadController.muteChat(userId, threadId),
+    unmuteChat: async (_parent, { userId, threadId }, _context, _info) =>
+      await ThreadController.unmuteChat(userId, threadId),
   },
 };
 module.exports = resolvers;
