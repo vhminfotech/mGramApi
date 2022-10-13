@@ -136,3 +136,29 @@ exports.getByIdAndUpdate = async (id, updateValues) => {
     throw error;
   }
 };
+
+exports.updateMuted = async (threadId, updateObject) => {
+  try {
+    const thread = await Thread.updateOne(
+      { _id: threadId },
+      { $push: { mutedForUser: [updateObject] } },
+      { new: true }
+    );
+    return thread;
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.updateUnmute = async (threadId, updateObject) => {
+  try {
+    const thread = await Thread.updateOne(
+      { _id: threadId },
+      { $pullAll: { mutedForUser: [updateObject] } },
+      { new: true }
+    );
+    return thread;
+  } catch (error) {
+    throw error;
+  }
+};

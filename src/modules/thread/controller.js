@@ -8,7 +8,7 @@ const { getMessageList } = require("../message/controller");
 
 exports.createThread = async (threadInput) => {
   try {
-    
+
     let checkThread;
     if (threadInput.isGroup === false) {
       let recipientsId = threadInput?.recipientsIds[0];
@@ -96,7 +96,7 @@ exports.getThread = async (threadId) => {
 
 exports.getThreadList = async (userId) => {
   try {
-    
+
     // const threadRes = await Thread.getAll({
     //   $and: [
     //     {
@@ -110,7 +110,7 @@ exports.getThreadList = async (userId) => {
     const threadRes = await Thread.getAll({
       $or: [{ lastSenderId: userId }, { recipientsIds: { $in: [userId] } }],
     });
-    
+
     const threadsExcept = []
 
     await Promise.all(threadRes.map(async (threadResItem) => {
@@ -124,7 +124,7 @@ exports.getThreadList = async (userId) => {
           { deletedForUser: { $nin: [userId] } },
         ],
       })
-      
+
       if (threadDeleted) { threadsExcept.push(threadResItem) }
 
       // } 
@@ -172,6 +172,16 @@ exports.getThreadList = async (userId) => {
 
     const threadList = await Promise.all(
       recipientsIdsArr.map(async (arritem) => {
+
+        const threadRes = await Thread.getById(arritem.threadId)
+
+        let isMuted
+        if (threadRes.mutedForUser.includes(userId)) {
+          isMuted = true
+        } else {
+          isMuted = false
+        }
+        console.log("arritem", arritem)
         let user;
         if (arritem.recipientsIds === userId) {
           const userRes = await User.getById({ _id: arritem.lastSenderId });
@@ -200,7 +210,8 @@ exports.getThreadList = async (userId) => {
           groupName: arritem.groupName,
           recipientIds: arritem.recipientIds,
           isNotParticipant: arritem.isNotParticipants,
-          url: messageRes[0]?.url
+          url: messageRes[0]?.url,
+          isMuted: isMuted
         };
 
         return recipientUser;
@@ -380,6 +391,58 @@ exports.removeParticipantFromGroupIfUAreAdmin = async (groupId, userId, userToBe
     } else {
       return { message: "Group Exit Updation Failed" }
     }
+  } catch (error) {
+    throw error
+  }
+}
+
+exports.muteChat = async (userId, threadId) => {
+  try {
+
+    const updateObject = userId;
+    const updateThreadRes = await Thread.updateMuted(
+      threadId,
+      updateObject
+    );
+
+    let error, message;
+    if (updateThreadRes) {
+      message = "Thread Muted";
+      error = false
+    } else {
+      message = "Thread Is Not Muted";
+      error = true
+    }
+    return {
+      message,
+      error
+    };
+  } catch (error) {
+    throw error
+  }
+}
+
+exports.unmuteChat = async (userId, threadId) => {
+  try {
+
+    const updateObject = userId;
+    const updateThreadRes = await Thread.updateUnmute(
+      threadId,
+      updateObject
+    );
+
+    let error, message;
+    if (updateThreadRes) {
+      message = "Thread Unmuted";
+      error = false
+    } else {
+      message = "Thread Is Not Unmuted";
+      error = true
+    }
+    return {
+      message,
+      error
+    };
   } catch (error) {
     throw error
   }

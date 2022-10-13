@@ -16,6 +16,7 @@ type UserData{
     recipientIds: [String]
     isNotParticipant: [String]
     url: String
+    isMuted: Boolean
 }
 
 type ThreadListRes{
@@ -61,6 +62,7 @@ type GroupListRes{
 
 type Message{
     message: String
+    error: String
 }
 
 type Query{
@@ -76,6 +78,8 @@ type Mutation {
     exitGroup(groupId: ID, userId: ID): Message
     dismissionAdmin(groupId: ID, userId: ID, userToBeDismissID: ID): Message
     removeParticipantFromGroupIfUAreAdmin(groupId: ID, userId: ID, userToBeRemoveFromGroupID: ID): Message
+    muteChat(userId:ID, threadId:ID): Message
+    unmuteChat(userId:ID, threadId:ID): Message
 }
 `;
 
