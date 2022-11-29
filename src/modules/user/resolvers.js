@@ -10,10 +10,10 @@ const resolvers = {
   Mutation: {
     registerUser: async (
       _parent,
-      { name, operatorId, msisdn },
+      { name, operatorId, msisdn, countryCode },
       _context,
       _info
-    ) => await UserController.createUser(name, operatorId, msisdn),
+    ) => await UserController.createUser(name, operatorId, msisdn, countryCode),
     blockUser: async (
       _parent,
       { userId, userIdToBlock },

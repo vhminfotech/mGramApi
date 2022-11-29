@@ -27,6 +27,16 @@ exports.getUser = async (data) => {
   }
 };
 
+exports.searchUser = async (data) => {
+  try {
+    let query = { $or: [{ msisdn: { $regex: data, } }, { fullMsisdn: { $regex: data } }] }
+    const user = await User.findOne(query);
+    return user;
+  } catch (error) {
+    throw error;
+  }
+};
+
 
 exports.update = async (userId, updateObject) => {
   try {
@@ -55,13 +65,13 @@ exports.updateToDelete = async (userId, updateObject) => {
 
 exports.updateUser = async (queryObject, updateObject) => {
   try {
-      const user = await User.findByIdAndUpdate(
-          queryObject,
-          { $set: updateObject },
-          { new: true }
-      );
-      return user;
+    const user = await User.findByIdAndUpdate(
+      queryObject,
+      { $set: updateObject },
+      { new: true }
+    );
+    return user;
   } catch (error) {
-      throw error;
+    throw error;
   }
 };

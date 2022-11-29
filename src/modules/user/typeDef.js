@@ -47,7 +47,7 @@ type Query{
 }
 
 type Mutation {
-    registerUser(name: String, operatorId:ID, msisdn:String): CreateUser
+    registerUser(name: String, operatorId:ID, msisdn:String, countryCode:String): CreateUser
     blockUser(userId: ID, userIdToBlock: ID): BlockRes
     unblockUser(userId: ID, userIdToUnblock: ID): BlockRes
 }
