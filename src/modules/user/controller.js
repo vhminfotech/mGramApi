@@ -21,7 +21,7 @@ exports.getToken = (name, msisdn) => {
 };
 
 // signup user
-exports.createUser = async (name, operatorId, msisdn) => {
+exports.createUser = async (name, operatorId, msisdn, countryCode) => {
   try {
     const user = await User.getUser({ msisdn: msisdn });
 
@@ -38,6 +38,8 @@ exports.createUser = async (name, operatorId, msisdn) => {
         name: name,
         operator: operator.name,
         msisdn: msisdn,
+        countryCode: countryCode,
+        fullMsisdn: countryCode + msisdn
       });
 
       const userDataResIfUserNotExist = {
@@ -102,9 +104,7 @@ exports.getUserUsingApp = async (userData, userId) => {
     const user = await User.getById({ _id: userId });
     const userDataRes = await Promise.all(
       userData.map(async (users) => {
-        const userData = await User.getUser({
-          msisdn: users,
-        });
+        const userData = await User.searchUser(users);
 
         const checkThread = await Thread.getThread({
           $or: [
