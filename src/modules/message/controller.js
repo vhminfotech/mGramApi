@@ -196,19 +196,26 @@ exports.forwardMessage = async (messageInput) => {
       await Thread.updateOne(messageInput?.threadId, messageInput?.receiverId)
     }
 
-    const messageData = {
-      dateSend: moment.utc(new Date()).format(),
-      message: messageInput.message,
-      threadId: messageInput.threadId,
-      senderId: messageInput.senderId,
-      url: messageInput?.url,
-      isForwarded: true,
+    const messageRes = await Promise.all(messageInput.chat.map(async (chatItem) => {
+      const messageData = {
+        dateSend: moment.utc(new Date()).format(),
+        message: chatItem.message,
+        threadId: messageInput.threadId,
+        senderId: messageInput.senderId,
+        url: chatItem?.url,
+        isForwarded: true,
+        isAttachment: chatItem?.isAttachment,
+        attachmentType: chatItem?.attachmentType,
+        attachmentId: chatItem?.attachmentId
 
-    };
+      };
 
-    const messageRes = await Message.create(messageData);
+      const messageRes = await Message.create(messageData);
+      return messageRes
+    }))
 
-    return messageRes;
+
+    return { messages: messageRes };
   } catch (error) {
     throw error
   }
