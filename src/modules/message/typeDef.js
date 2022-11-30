@@ -25,6 +25,10 @@ type GetMessageListRes{
     blocked: Boolean
 }
 
+type MessageList{
+    messages: [Message]
+}
+
 input MessageInput{
     threadId: ID,
     senderId: ID,
@@ -36,6 +40,21 @@ input MessageInput{
     attachmentId: ID,
     url: String,
     isForwarded: Boolean,
+}
+
+input ChatObject{
+    message: String,
+    attachmentType: AttachmentTypeEnum,
+    isAttachment: Boolean,
+    attachmentId: ID,
+    url: String,
+}
+
+input MessageForwardInput{
+    threadId: ID,
+    senderId: ID,
+    receiverId: ID,
+    chat: [ChatObject]
 }
 
 type DeleteMessageRes{
@@ -60,7 +79,7 @@ type Query{
 type Mutation {
     createMessage(messageInput : MessageInput): Message
     deleteMessages(deleteMessageInput : DeleteMessageInput): DeleteMessageRes
-    forwardMessage(messageInput: MessageInput): Message
+    forwardMessage(messageInput: MessageForwardInput): MessageList
 }
 `;
 
