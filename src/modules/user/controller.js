@@ -76,7 +76,7 @@ exports.createUser = async (name, operatorId, msisdn, countryCode) => {
 
     const otp = utils.generateOtp();
 
-    const otpRes = await sendOTP(msisdn, otp)
+    // const otpRes = await sendOTP(msisdn, otp)
 
     const queryObject = { _id: userDataRes.userId };
     const updateObject = {

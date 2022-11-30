@@ -48,6 +48,14 @@ exports.createThread = async (threadInput) => {
     }
 
     if (checkThread) {
+      const messageData = {
+        dateSend: moment.utc(new Date()).format(),
+        message: threadInput?.message,
+        threadId: checkThread._id,
+        senderId: threadInput?.lastSenderId,
+        url: threadInput?.url
+      };
+      await Message.create(messageData);
       return checkThread;
     } else {
 
