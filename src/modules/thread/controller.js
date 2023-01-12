@@ -229,6 +229,10 @@ exports.getThreadList = async (userId) => {
     const threadListRes = threadList.filter(
       (threadListItem) => threadListItem.message !== undefined
     );
+
+    threadListRes.sort(function (x, y) {
+      return y.messageDate - x.messageDate;
+    })
     // console.log("threadListRes", threadListRes)
     return { recipientUser: JSON.parse(JSON.stringify(threadListRes)) };
   } catch (error) {
