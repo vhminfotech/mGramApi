@@ -30,12 +30,17 @@ exports.uploadAttachments = async (files) => {
     
     const { createReadStream, filename, mimetype, encoding } = await files.file;
     const stream = createReadStream()
-    const pathName = path.join(__dirname, `../../../public/uploads/${filename}`)
+    // const pathName = path.join(__dirname, `../../../public/uploads/${filename}`)
+    // for server
+    const pathName = path.join("/usr/share/nginx/html", `/public1/${filename}`)
+
 
     await stream.pipe(fs.createWriteStream(pathName))
 
     return {
-      uri: `https://0950-182-77-120-6.in.ngrok.io/uploads/${filename}`,
+      // uri: `${process.env.SERVER_URL}/uploads/${filename}`,
+      // for server
+      uri: `${process.env.SERVER_URL}/public1/${filename}`,
 
     };
   } catch (error) {
