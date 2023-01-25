@@ -181,7 +181,7 @@ exports.getUserUsingApp = async (userData, userId) => {
         }
       }
     }
-
+    
     if (userDataRes.includes(userDataResObj)) {
       const indexRes = userDataRes.indexOf(userDataResObj);
       if (indexRes > -1) {
@@ -197,7 +197,10 @@ exports.getUserUsingApp = async (userData, userId) => {
     //   (userDataItem) => userDataItem?.msisdn === user.msisdn
     // );
 
-    return { userData: JSON.parse(JSON.stringify(data)) };
+    const key = 'msisdn';
+    const dataWithoutDuplicate = [...new Map(data.map(item => [item[key], item])).values()]
+
+    return { userData: JSON.parse(JSON.stringify(dataWithoutDuplicate)) };
   } catch (error) {
     throw error;
   }
