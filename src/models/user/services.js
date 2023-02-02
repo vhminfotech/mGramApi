@@ -29,8 +29,9 @@ exports.getUser = async (data) => {
 
 exports.searchUser = async (data) => {
   try {
-    let query = { $or: [{ msisdn: { $regex: data, } }, { fullMsisdn: { $regex: data } }] }
-    const user = await User.findOne(query);
+    // let query = { $or: [{ msisdn: { $regex: data, } }, { fullMsisdn: { $regex: data } }] }
+    const user = await User.findOne({ $text: { $search: data } });
+    // const user = await User.findOne(query);
     return user;
   } catch (error) {
     throw error;
