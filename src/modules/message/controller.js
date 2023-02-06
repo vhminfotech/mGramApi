@@ -37,7 +37,7 @@ exports.createMessage = async (messageInput) => {
 
 
     const messageData = {
-      dateSend: moment.utc(new Date()).format(),
+      dateSend: moment().format("YYYY-MM-DD[T]HH:mm:ss.SSS"),
       message: messageInput.message,
       threadId: messageInput.threadId,
       senderId: messageInput.senderId,
@@ -50,6 +50,7 @@ exports.createMessage = async (messageInput) => {
 
     const messageRes = await Message.create(messageData);
 
+    messageRes.dateSend = moment(messageRes.dateSend).format("YYYY-MM-DD[T]HH:mm:ss.SSSZ")
 
     return messageRes;
   } catch (error) {

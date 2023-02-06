@@ -165,7 +165,7 @@ io.on("connection", (socket) => {
 
       const userRes = await User.getById(commasepReceiverId)
 
-      var userIsInArray = userRes.blockdUser.some(function (blockedUserItem) {
+      var userIsInArray = userRes?.blockdUser.some(function (blockedUserItem) {
         return blockedUserItem === senderId;
       });
 
