@@ -5,7 +5,7 @@ const moment = require("moment");
 
 exports.createMessage = async (messageInput) => {
   try {
-    
+
     let blockedMessage
     const threadRes = await Thread.getById(messageInput.threadId)
 
@@ -50,7 +50,7 @@ exports.createMessage = async (messageInput) => {
 
     const messageRes = await Message.create(messageData);
 
-    messageRes.dateSend = moment(messageRes.dateSend).format("YYYY-MM-DD[T]HH:mm:ss.SSSZ")
+    messageRes.dateSend = moment.utc(messageRes.createdAt).local().format("YYYY-MM-DD[T]HH:mm:ss.SSSZ")
 
     return messageRes;
   } catch (error) {
