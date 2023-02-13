@@ -1,7 +1,7 @@
 const Message = require("../../models/message/services");
 const Thread = require("../../models/thread/services");
 const User = require("../../models/user/services");
-const moment = require("moment");
+const moment = require("moment-timezone");
 
 exports.createMessage = async (messageInput) => {
   try {
@@ -51,7 +51,10 @@ exports.createMessage = async (messageInput) => {
     const messageRes = await Message.create(messageData);
 
     // messageRes.dateSend = moment(messageRes.createdAt).toLocaleString("YYYY-MM-DD[T]HH:mm:ss.SSSZ")
-    messageRes.dateSend = moment.utc(messageRes.createdAt).format("YYYY-MM-DD[T]HH:mm:ss.SSSZ")
+    // messageRes.dateSend = moment.utc(messageRes.createdAt).format("YYYY-MM-DD[T]HH:mm:ss.SSSZ")
+    // messageRes.dateSend = new Date(messageRes.createdAt).toLocaleString(undefined, {timeZone: 'Asia/Kolkata'});
+    messageRes.dateSend = moment(messageRes.createdAt).tz('Asia/Kolkata').format("YYYY-MM-DD[T]HH:mm:ss.SSSZ")
+
 
     return messageRes;
   } catch (error) {
