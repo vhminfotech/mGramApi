@@ -127,7 +127,8 @@ io.on("connection", (socket) => {
     });
   });
 
-  const currTime = moment();
+  const currentTime = moment();
+  const currTime = moment.utc(currentTime).format("YYYY-MM-DD[T]HH:mm:ss.SSSZ")
   //send and get message
   socket.on("sendMessage", async (senderId, receiverId, text, name, url) => {
 
