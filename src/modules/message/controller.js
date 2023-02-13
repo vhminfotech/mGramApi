@@ -50,7 +50,8 @@ exports.createMessage = async (messageInput) => {
 
     const messageRes = await Message.create(messageData);
 
-    messageRes.dateSend = moment.utc(messageRes.createdAt).local().format("YYYY-MM-DD[T]HH:mm:ss.SSSZ")
+    // messageRes.dateSend = moment(messageRes.createdAt).toLocaleString("YYYY-MM-DD[T]HH:mm:ss.SSSZ")
+    messageRes.dateSend = moment.utc(messageRes.createdAt).format("YYYY-MM-DD[T]HH:mm:ss.SSSZ")
 
     return messageRes;
   } catch (error) {
@@ -113,10 +114,11 @@ exports.getMessageList = async (senderId, receiverId, threadId, userId) => {
         threadId: messageItem.threadId,
         senderId: messageItem.senderId,
         message: messageItem.message,
-        dateSent: messageItem.createdAt,
+        // dateSent: messageItem.createdAt,
         url: messageItem.url,
         read: read
       };
+      messageObj.dateSent = moment.utc(messageItem.createdAt).format("YYYY-MM-DD[T]HH:mm:ss.SSSZ")
       return messageObj;
     });
 
@@ -149,9 +151,10 @@ exports.getGroupMessageList = async (senderId, threadId) => {
         threadId: messageItem.threadId,
         senderId: messageItem.senderId,
         message: messageItem.message,
-        dateSent: messageItem.createdAt,
+        // dateSent: messageItem.createdAt,
         userName: userRes.name,
       };
+      messageObj.dateSent = moment.utc(messageItem.createdAt).format("YYYY-MM-DD[T]HH:mm:ss.SSSZ")
       return messageObj;
     }));
 
