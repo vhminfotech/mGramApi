@@ -157,7 +157,8 @@ exports.getGroupMessageList = async (senderId, threadId) => {
         // dateSent: messageItem.createdAt,
         userName: userRes.name,
       };
-      messageObj.dateSent = moment.utc(messageItem.createdAt).format("YYYY-MM-DD[T]HH:mm:ss.SSSZ")
+      messageObj.dateSent = moment(messageItem.createdAt).tz('Asia/Kolkata').format("YYYY-MM-DD[T]HH:mm:ss.SSSZ")
+      // messageObj.dateSent = moment.utc(messageItem.createdAt).format("YYYY-MM-DD[T]HH:mm:ss.SSSZ")
       return messageObj;
     }));
 
