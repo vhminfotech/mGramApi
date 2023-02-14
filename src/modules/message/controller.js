@@ -51,9 +51,10 @@ exports.createMessage = async (messageInput) => {
     const messageRes = await Message.create(messageData);
 
     // messageRes.dateSend = moment(messageRes.createdAt).toLocaleString("YYYY-MM-DD[T]HH:mm:ss.SSSZ")
-    // messageRes.dateSend = moment.utc(messageRes.createdAt).format("YYYY-MM-DD[T]HH:mm:ss.SSSZ")
-    // messageRes.dateSend = new Date(messageRes.createdAt).toLocaleString(undefined, {timeZone: 'Asia/Kolkata'});
-    messageRes.dateSend = moment(messageRes.createdAt).tz('Asia/Kolkata').format("YYYY-MM-DD[T]HH:mm:ss.SSSZ")
+  //server
+    messageRes.dateSend = moment(messageRes.createdAt).add(25, 'minutes').tz('Asia/Kolkata').format("YYYY-MM-DD[T]HH:mm:ss.SSSZ")
+    //local
+    // messageRes.dateSend = moment(messageRes.createdAt).tz('Asia/Kolkata').format("YYYY-MM-DD[T]HH:mm:ss.SSSZ")
 
 
     return messageRes;
@@ -121,7 +122,8 @@ exports.getMessageList = async (senderId, receiverId, threadId, userId) => {
         url: messageItem.url,
         read: read
       };
-      messageObj.dateSent = moment.utc(messageItem.createdAt).format("YYYY-MM-DD[T]HH:mm:ss.SSSZ")
+      messageObj.dateSent = moment(messageItem.createdAt).add(25, 'minutes').tz('Asia/Kolkata').format("YYYY-MM-DD[T]HH:mm:ss.SSSZ")
+      // messageObj.dateSent = moment.utc(messageItem.createdAt).format("YYYY-MM-DD[T]HH:mm:ss.SSSZ")
       return messageObj;
     });
 
@@ -157,7 +159,7 @@ exports.getGroupMessageList = async (senderId, threadId) => {
         // dateSent: messageItem.createdAt,
         userName: userRes.name,
       };
-      messageObj.dateSent = moment(messageItem.createdAt).tz('Asia/Kolkata').format("YYYY-MM-DD[T]HH:mm:ss.SSSZ")
+      messageObj.dateSent = moment(messageItem.createdAt).add(25, 'minutes').tz('Asia/Kolkata').format("YYYY-MM-DD[T]HH:mm:ss.SSSZ")
       // messageObj.dateSent = moment.utc(messageItem.createdAt).format("YYYY-MM-DD[T]HH:mm:ss.SSSZ")
       return messageObj;
     }));
