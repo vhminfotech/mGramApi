@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-userSchema.index({ msisdn: 1 }, { unique: true });
+userSchema.index({ msisdn: 1 });
 userSchema.index({ "$**": "text" });
 
 module.exports = userSchema;

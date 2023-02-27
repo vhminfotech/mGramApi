@@ -8,6 +8,7 @@ const User = require("./models/user/services");
 
 connectToDB();
 
+const chatNamespace = io.of('/socket.io');
 // const users = {};
 
 // let numUsers = 0;
@@ -104,14 +105,14 @@ const getUser = async (userId) => {
   return a
 };
 
-io.on("connection", (socket) => {
+chatNamespace.on("connection", (socket) => {
   //when connect
   console.log("a user connected.");
   socket.removeAllListeners();
   //take userId and socketId from user
   socket.on("addUser", (userId) => {
     addUser(userId, socket.id);
-    io.emit("getUsers", users);
+    chatNamespace.emit("getUsers", users);
   });
 
   socket.on("typing", (flag) => {
@@ -151,7 +152,7 @@ io.on("connection", (socket) => {
 
     })
 
-    io.to(readReadSender).emit("getReadMessage", {
+    chatNamespace.to(readReadSender).emit("getReadMessage", {
       senderId,
       text,
       url,
@@ -175,7 +176,7 @@ io.on("connection", (socket) => {
         recive.push(receiverId)
         const user = await getUser(receiverId);
         user.forEach((userItem) => {
-          io.to(userItem?.socketId).emit("getMessage", {
+          chatNamespace.to(userItem?.socketId).emit("getMessage", {
             senderId,
             text,
             currTime,
@@ -189,7 +190,7 @@ io.on("connection", (socket) => {
       recive.push(receiverId)
       const user = await getUser(receiverId);
       user.forEach((userItem) => {
-        io.to(userItem?.socketId).emit("getMessage", {
+        chatNamespace.to(userItem?.socketId).emit("getMessage", {
           senderId,
           text,
           currTime,
@@ -209,7 +210,7 @@ io.on("connection", (socket) => {
       messageID: MESSAGE_ID
     };
     // Emit 'delivered' event
-    io.emit('delivered', options);
+    chatNamespace.emit('delivered', options);
   });
 
   socket.on('markSeen', function (SENDER_ID, MESSAGE_ID) {
@@ -221,13 +222,13 @@ io.on("connection", (socket) => {
     };
 
     // Emit 'markedSeen' event
-    io.emit('markedSeen', options);
+    chatNamespace.emit('markedSeen', options);
   });
 
   //when disconnect
   socket.on("disconnect", () => {
     removeUser(socket.id);
-    io.emit("getUsers", users);
+    chatNamespace.emit("getUsers", users);
   });
 });
 

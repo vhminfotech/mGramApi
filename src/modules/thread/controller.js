@@ -1,7 +1,7 @@
 const Thread = require("../../models/thread/services");
 const User = require("../../models/user/services");
 const Message = require("../../models/message/services");
-const moment = require("moment");
+const moment = require("moment-timezone");
 
 const _ = require('lodash');
 const { getMessageList } = require("../message/controller");
@@ -212,7 +212,7 @@ exports.getThreadList = async (userId) => {
           operator: user.operator,
           userId: user._id,
           message: messageRes[0].message,
-          messageDate: messageRes[0].createdAt,
+          // messageDate: messageRes[0].createdAt,
           threadId: arritem.threadId,
           isGroup: arritem.isGroup,
           groupName: arritem.groupName,
@@ -221,6 +221,8 @@ exports.getThreadList = async (userId) => {
           url: messageRes[0]?.url,
           isMuted: isMuted
         };
+        recipientUser.messageDate = moment(messageRes[0].createdAt).add(25, 'minutes').tz('Asia/Kolkata')
+        // recipientUser.messageDate = moment(messageRes[0].createdAt).add(25, 'minutes').tz('Asia/Kolkata').format("YYYY-MM-DD[T]HH:mm:ss.SSSZ")
 
         return recipientUser;
       })
